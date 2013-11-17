@@ -6,10 +6,11 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.regex.Pattern;
-
+import com.microblog.paxos.*;
 
 public class Server extends Thread{
+	
+	private Paxos paxosInstance;
 	private ServerSocket serverSocket;
 	private int myId;
 	private boolean isStop;
@@ -39,6 +40,7 @@ public class Server extends Thread{
 		isStop = false;
 	}
 	
+	@Override
 	public void run()	{
 		
 		while (true)	{
