@@ -7,8 +7,8 @@ public class Paxos {
 	protected Sender sender;
 	protected LinkedList<String> jobQueue;
 	
-	public Paxos (Sender sender)	{
-		this.sender = sender;
+	public Paxos ()	{
+		//sender = new Sender();
 		jobQueue = new LinkedList<String>();
 	}
 	
