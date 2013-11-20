@@ -3,10 +3,12 @@ package com.microblog.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import com.microblog.paxos.*;
+
+import com.microblog.paxos.Paxos;
 
 public class Server extends Thread{
 	
@@ -48,13 +50,19 @@ public class Server extends Thread{
 			try {
 				System.out.println("I am listening...");
 				Socket client = serverSocket.accept();
+				BufferedReader inputstream = new BufferedReader( new InputStreamReader( client.getInputStream()));
+				PrintWriter outputstream = new PrintWriter (client.getOutputStream(), true);
+				System.out.println( "get msg from client:" + inputstream.readLine() );
 				if( !isStop )	{
 					System.out.println("exec...");
+					
+					outputstream.println("success");
+					
 				}
 				
 				else	{
 					System.out.println("fail...");
-					
+					outputstream.println("fail");
 				}
 				
 			} catch (IOException e) {
