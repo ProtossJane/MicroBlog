@@ -8,12 +8,16 @@ import java.net.Socket;
 public abstract class Server implements Runnable {
 	protected ServerSocket serverSocket;
 
-	public Server()	{
-		
+	public Server() throws IOException	{
+		serverSocket = new ServerSocket();
 	}
 	public Server (String host, int port) throws IOException	{
 		
 		serverSocket = new ServerSocket();
+		serverSocket.bind( new InetSocketAddress(host,8000) );
+	}
+	
+	public void bind (String host, int port) throws IOException 	{
 		serverSocket.bind( new InetSocketAddress(host,8000) );
 	}
 	

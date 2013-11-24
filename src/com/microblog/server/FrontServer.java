@@ -1,29 +1,57 @@
 
 package com.microblog.server;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
 
+import com.microblog.paxos.Dispenser;
 import com.microblog.paxos.Paxos;
+import com.microblog.paxos.Proposal;
+import com.microblog.paxos.Receiver;
 
 public class FrontServer extends Server{
 	
 	private Paxos paxosInstance;
-	private int myId;
+	
 	private boolean isStop;
 	private static FrontServer server = null;
-	public static int numOfNodes = 5;
-	
+	public static int serverId = 0;
+	public static String localAddr = null;
+	public static int quorumSize = 3;
+	public static int lastPosition = 0;
+	public HashMap<Integer, String> route;
+	public ArrayList<Proposal> GlobalLog;
+	public ArrayList<String> localLog;
+	private FrontServer () throws IOException	{
+		super();
+		isStop = false;
+		paxosInstance = new Paxos();
+		route = new HashMap<Integer, String>();
+		setRoutingTable();
+		super.bind(localAddr, 8000);
+	}
 	private FrontServer (String host, int port) throws IOException	{
 		super(host, port);
-		myId = (int)Math.floor(Math.random() * numOfNodes); //need to fix
 		isStop = false;
+		paxosInstance = new Paxos();
+		route = new HashMap<Integer, String>();
+		setRoutingTable();
 		//serverSocket = new ServerSocket();
 		//serverSocket.bind( new InetSocketAddress("127.0.0.1",8000) );
+	}
+	
+	public static synchronized FrontServer getInstance() throws IOException	{
+		if (server == null) {
+			
+            server = new FrontServer();
+		}
+		return server;
 	}
 	
 	public static synchronized FrontServer getInstance(String host, int port) throws IOException {
@@ -31,6 +59,27 @@ public class FrontServer extends Server{
                 server = new FrontServer(host, port);
         }
         return server;
+	}
+	
+	public void setRoutingTable()	{
+		
+		try {
+			BufferedReader reader = new BufferedReader( new FileReader(System.getProperty("user.dir") + "/route") ) ;
+			String s;
+			try {
+				while ( (s = reader.readLine()) !=null)	{
+					String[] par = s.split(":");
+					route.put(Integer.valueOf(par[0]), par[1]);
+					if (Integer.valueOf(par[0]).intValue() == serverId)
+						localAddr = par[1];
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void fail()	{
@@ -47,9 +96,18 @@ public class FrontServer extends Server{
 		try {
 			BufferedReader inputstream = new BufferedReader( new InputStreamReader( client.getInputStream()));
 			PrintWriter outputstream = new PrintWriter (client.getOutputStream(), true);
-			System.out.println( "get msg from client:" + inputstream.readLine() );
+			String msg = inputstream.readLine();
+			System.out.println( "get msg from client:" + msg );
 			if( !isStop )	{
-				System.out.println("exec...");
+				
+				if (msg.matches("POST:.*"))	{
+					System.out.println("exec post...");
+					paxosInstance.addJob(msg);
+				}
+				
+				else if (msg.matches("READ"))	{
+					System.out.println("exec read...");
+				}
 				
 				outputstream.println("success");
 				
@@ -70,14 +128,19 @@ public class FrontServer extends Server{
 	
 	public String toString()	{
 		
-		return "my id:" + myId + "	" + serverSocket;
+		return "my id:" + serverId + "	" + serverSocket;
 	}
 	
 	
 	public static void main( String[] args)	{
 
+		serverId = Integer.valueOf( args[0] );
 		try {
-			new Thread(FrontServer.getInstance("127.0.0.1", 8000)).start();
+			Receiver receiver = new Receiver (FrontServer.getInstance().paxosInstance);
+			Dispenser dispenser = new Dispenser(FrontServer.getInstance().paxosInstance);
+			new Thread(FrontServer.getInstance()).start();
+			new Thread(receiver).start();
+			new Thread(dispenser).start();
 			CLI();
 		} catch (IOException e1) {
 			e1.printStackTrace();
