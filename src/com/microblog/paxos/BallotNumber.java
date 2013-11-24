@@ -10,6 +10,15 @@ public class BallotNumber {
 		this.senderId	  = senderId;
 		this.positionId   = positionId;
 	}
+	
+	int compareTo (BallotNumber bal)	{
+		if ( this.proposalId > bal.proposalId || (this.proposalId == bal.proposalId && this.senderId > bal.senderId))
+			return 1;
+		else if (this.proposalId == bal.proposalId && this.senderId == bal.senderId)
+			return 0;
+		else return -1;
+	}
+	
 	public String toString ()	{
 		return proposalId + ":" + senderId + ":" + positionId;
 	}

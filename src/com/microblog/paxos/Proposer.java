@@ -13,7 +13,6 @@ public class Proposer {
 	protected String message				   = null;
 	protected BallotNumber bal				   = new BallotNumber(0, FrontServer.serverId, 0);
 	protected BallotNumber acceptedBal 		   = null;
-	protected String acceptedMessage 		   = null;
 	protected HashSet<Integer> promiseReceived = null;
 	protected FrontServer server 			   = FrontServer.getInstance();
 	public Proposer (Sender sender) throws IOException	{
@@ -32,12 +31,20 @@ public class Proposer {
 		sender.broadCast("prepare:" + bal.toString() );
 	}
 	
-	public void receivePromise (BallotNumber bal, BallotNumber BallotNumber, int senderId, String message)	{
+	public void receivePromise (BallotNumber bal, BallotNumber ballotNumber, int senderId, String message)	{
 		if ( !bal.equals(this.bal) || promiseReceived.contains(senderId) )	{
 			return;
 		}
 		
 		promiseReceived.add(senderId);
+		if (ballotNumber != null)
+			if (acceptedBal == null || ballotNumber.compareTo(acceptedBal) > 0) {
+				acceptedBal = ballotNumber;
+				this.message = message;
+			}
+		
+		if (promiseReceived.size() == server.quorumSize)
+			sender.broadCast("accept:" + bal.toString() + ":" + message);
 		
 	}
 	
