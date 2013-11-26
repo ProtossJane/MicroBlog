@@ -1,14 +1,17 @@
 package com.microblog.paxos;
 
+import java.io.IOException;
+
 import com.microblog.server.FrontServer;
 
 public class Accepter {
 	
 	protected Sender sender;
-	protected BallotNumber promisedBal = null;
+	protected BallotNumber promisedBal  = null;
 	protected Proposal acceptedProposal = null;
+	protected FrontServer server 		= FrontServer.getInstance();
 	
-	public Accepter (Sender sender)	{
+	public Accepter (Sender sender)	throws IOException {
 		
 		this.sender = sender;
 		
@@ -16,7 +19,7 @@ public class Accepter {
 	
 	public void receivePrepare( BallotNumber bal )	{
 		
-		if (bal.positionId <= FrontServer.lastPosition )
+		if (bal.positionId <= server.lastPosition )
 			return; //or signal the sender for recovering
 		
 		if( promisedBal == null )	{
@@ -26,7 +29,7 @@ public class Accepter {
 		
 		else if ( bal.compareTo(promisedBal) == 0 || bal.compareTo(promisedBal) > 0 )	{
 			
-			if ( bal.positionId > FrontServer.lastPosition + 1)	
+			if ( bal.positionId > server.lastPosition + 1)	
 				acceptedProposal = null;
 			promisedBal = bal;
 			sender.send("promise:" + bal + ":" + acceptedProposal, bal.senderId);

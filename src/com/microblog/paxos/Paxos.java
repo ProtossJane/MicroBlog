@@ -10,11 +10,14 @@ public class Paxos {
 	protected LinkedList<String> jobQueue;
 	protected Proposer proposer;
 	protected Accepter accepter;
+	protected Learner learner;
 	
 	public Paxos (HashMap<Integer, String> route) throws IOException	{
 		sender = new Sender(route);
 		jobQueue = new LinkedList<String>();
 		proposer = new Proposer(sender);
+		accepter = new Accepter (sender);
+		learner = new Learner (sender);
 	}
 	
 	public synchronized void addJob( String job )	{

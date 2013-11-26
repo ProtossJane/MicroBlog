@@ -20,7 +20,7 @@ public class FrontServer extends Server{
 	private Paxos paxosInstance;
 	
 	private boolean isStop;
-	private static FrontServer server = null;
+	private static FrontServer server ;
 	public static int serverId = 0;
 	public static String localAddr = null;
 	public static int quorumSize = 3;
@@ -32,7 +32,6 @@ public class FrontServer extends Server{
 	private FrontServer () throws IOException	{
 		super();
 		isStop = false;
-		paxosInstance = new Paxos(route);
 		route = new HashMap<Integer, String>();
 		setRoutingTable();
 		super.bind(localAddr, 8000);
@@ -41,14 +40,13 @@ public class FrontServer extends Server{
 	private FrontServer (String host, int port) throws IOException	{
 		super(host, port);
 		isStop = false;
-		paxosInstance = new Paxos(route);
 		route = new HashMap<Integer, String>();
 		setRoutingTable();
 	}
 	
 	public static synchronized FrontServer getInstance() throws IOException	{
 		if (server == null) {
-			
+			System.out.println("init server");
             server = new FrontServer();
 		}
 		return server;
@@ -82,6 +80,10 @@ public class FrontServer extends Server{
 		}
 	}
 	
+	public void initPaxos() throws IOException	{
+		paxosInstance = new Paxos(route);
+	}
+	
 	public void fail()	{
 		isStop = true;
 	}
@@ -104,7 +106,7 @@ public class FrontServer extends Server{
 				
 				if (msg.matches("POST:.*"))	{
 					System.out.println("exec post...");
-					paxosInstance.addJob(msg);
+					//paxosInstance.addJob(msg);
 				}
 				
 				else if (msg.matches("READ"))	{
@@ -138,11 +140,13 @@ public class FrontServer extends Server{
 
 		serverId = Integer.valueOf( args[0] );
 		try {
+			FrontServer.getInstance().initPaxos();
+			
 			Receiver receiver = new Receiver (FrontServer.getInstance().paxosInstance);
 			Dispenser dispenser = new Dispenser(FrontServer.getInstance().paxosInstance);
-			new Thread(FrontServer.getInstance()).start();
-			new Thread(receiver).start();
-			new Thread(dispenser).start();
+			//new Thread(FrontServer.getInstance()).start();
+			//new Thread(receiver).start();
+			//new Thread(dispenser).start();
 			CLI();
 		} catch (IOException e1) {
 			e1.printStackTrace();

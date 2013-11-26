@@ -14,11 +14,11 @@ public abstract class Server implements Runnable {
 	public Server (String host, int port) throws IOException	{
 		
 		serverSocket = new ServerSocket();
-		serverSocket.bind( new InetSocketAddress(host,8000) );
+		serverSocket.bind( new InetSocketAddress(host,port) );
 	}
 	
 	public void bind (String host, int port) throws IOException 	{
-		serverSocket.bind( new InetSocketAddress(host,8000) );
+		serverSocket.bind( new InetSocketAddress(host,port) );
 	}
 	
 	public void clientWorker (Socket client)	{
