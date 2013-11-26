@@ -11,6 +11,14 @@ public class BallotNumber {
 		this.positionId   = positionId;
 	}
 	
+	public BallotNumber ( BallotNumber bal)	{
+		
+		this.proposalId	  = bal.proposalId;
+		this.senderId	  = bal.senderId;
+		this.positionId   = bal.positionId;
+		
+	}
+	
 	int compareTo (BallotNumber bal)	{
 		if ( this.proposalId > bal.proposalId || (this.proposalId == bal.proposalId && this.senderId > bal.senderId))
 			return 1;

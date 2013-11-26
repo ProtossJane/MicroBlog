@@ -2,9 +2,9 @@ package com.microblog.paxos;
 
 public class Proposal {
 	public BallotNumber ballotNumber;
-	public String message;
+	public Message message;
 	
-	public Proposal (BallotNumber ballotNumber, String message, int positionId)	{
+	public Proposal (BallotNumber ballotNumber, Message message)	{
 		this.ballotNumber = ballotNumber;
 		this.message = message;
 		

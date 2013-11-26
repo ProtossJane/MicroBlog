@@ -1,17 +1,20 @@
 package com.microblog.paxos;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class Paxos {
 	
-	protected Dispenser dispenser;
 	protected Sender sender;
 	protected LinkedList<String> jobQueue;
-
-	public Paxos ()	{
-		//sender = new Sender();
+	protected Proposer proposer;
+	protected Accepter accepter;
+	
+	public Paxos (HashMap<Integer, String> route) throws IOException	{
+		sender = new Sender(route);
 		jobQueue = new LinkedList<String>();
-		dispenser = new Dispenser(this);
+		proposer = new Proposer(sender);
 	}
 	
 	public synchronized void addJob( String job )	{

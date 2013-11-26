@@ -24,26 +24,26 @@ public class FrontServer extends Server{
 	public static int serverId = 0;
 	public static String localAddr = null;
 	public static int quorumSize = 3;
-	public static int lastPosition = 0;
+	public int lastPosition = 0;
 	public HashMap<Integer, String> route;
 	public ArrayList<Proposal> GlobalLog;
 	public ArrayList<String> localLog;
+	
 	private FrontServer () throws IOException	{
 		super();
 		isStop = false;
-		paxosInstance = new Paxos();
+		paxosInstance = new Paxos(route);
 		route = new HashMap<Integer, String>();
 		setRoutingTable();
 		super.bind(localAddr, 8000);
 	}
+	
 	private FrontServer (String host, int port) throws IOException	{
 		super(host, port);
 		isStop = false;
-		paxosInstance = new Paxos();
+		paxosInstance = new Paxos(route);
 		route = new HashMap<Integer, String>();
 		setRoutingTable();
-		//serverSocket = new ServerSocket();
-		//serverSocket.bind( new InetSocketAddress("127.0.0.1",8000) );
 	}
 	
 	public static synchronized FrontServer getInstance() throws IOException	{
@@ -89,6 +89,8 @@ public class FrontServer extends Server{
 	public void unfail()	{
 		isStop = false;
 	}
+	
+	
 	
 	@Override
 	public void clientWorker(Socket client)	{

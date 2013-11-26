@@ -29,7 +29,7 @@ public class Accepter {
 			if ( bal.positionId > FrontServer.lastPosition + 1)	
 				acceptedProposal = null;
 			promisedBal = bal;
-			sender.send("promise:" + bal.toString() + ":" + acceptedProposal, bal.senderId);
+			sender.send("promise:" + bal + ":" + acceptedProposal, bal.senderId);
 			
 		}
 		
@@ -41,7 +41,7 @@ public class Accepter {
 			
 			promisedBal = proposal.ballotNumber;
 			acceptedProposal = proposal;
-			sender.broadCast("accept:" + acceptedProposal);
+			sender.broadCast("accepted:" + acceptedProposal);
 		}
 		
 	}
