@@ -11,7 +11,7 @@ public class Proposer {
 	protected boolean isPendding = false;
 	protected Sender sender;
 	protected Message message				   = null;
-	protected HashSet<Integer> promiseReceived = null;
+	protected HashSet<Integer> promiseReceived = new HashSet<Integer>();
 	protected FrontServer server 			   = FrontServer.getInstance();
 	protected BallotNumber acceptedBal 		   = null;
 	protected BallotNumber bal				   = new BallotNumber(0, FrontServer.serverId, 0);
@@ -29,7 +29,9 @@ public class Proposer {
 		promiseReceived.clear();
 		bal.proposalId += 1;
 		bal.positionId = server.lastPosition + 1;
-		sender.broadCast("prepare:" + bal.toString() );
+		System.out.println("ID "+ FrontServer.serverId + " broadcast prepare:"+bal);
+		//sender.broadCast("prepare:" + bal );
+		sender.send("prepare:" + bal, 1);
 	}
 	
 	public void receivePromise (BallotNumber bal, Proposal acceptedProposal, int senderId)	{

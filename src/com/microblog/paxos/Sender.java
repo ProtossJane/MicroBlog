@@ -9,28 +9,40 @@ import com.microblog.client.Client;
 
 public class Sender {
 	protected HashMap<Integer, String> route;
-	protected ArrayList<paxosClient> clientList;
+	protected HashMap<Integer,paxosClient> clientList;
 	public Sender (HashMap<Integer, String> route)	{
 		
 		this.route = route;
-		for (int i = 0 ; i < route.size(); ++i)	{
+		clientList = new HashMap<Integer, paxosClient>();
+		/*for (int i = 0 ; i < route.size(); ++i)	{
 			try {
 				clientList.add(new paxosClient(route.get(i+1), 9000 ) );
 			} catch (IOException e) {
-				//System.out.println( "cant find server ");
+				//System.out.println( "cant connect to server ");
 				//e.printStackTrace();
 			}
-		}
+		}*/
 	}
 
 	
 	public void send (String message, int dest)	{
+		
+		if ( !clientList.containsKey(dest))
+			try {
+				clientList.put(dest, new paxosClient(route.get(dest), 9000 ));
+			} catch (IOException e) {
+				System.out.println("can not connet to " + route.get(dest));
+				return;
+				//e.printStackTrace();
+			}
 		clientList.get(dest).send(message);
 	}
 	
 	public void broadCast (String message)	{
-		for (paxosClient client : clientList)
-			client.send(message);
+		
+		for (int i = 1; i <= 5; ++i)	{
+			send(message, i);
+		}
 		
 	}
 	

@@ -28,13 +28,15 @@ public abstract class Server implements Runnable {
 	
 	@Override
 	public void run() {
+		while (true)	{
 
-		try {
-			Socket client = serverSocket.accept();
-			clientWorker(client);
-
-		} catch (IOException e) {
-			e.printStackTrace();
+			try {
+				Socket client = serverSocket.accept();
+				clientWorker(client);
+	
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

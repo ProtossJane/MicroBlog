@@ -17,14 +17,14 @@ import com.microblog.paxos.Receiver;
 
 public class FrontServer extends Server{
 	
-	private Paxos paxosInstance;
+	public Paxos paxosInstance;
 	
 	private boolean isStop;
 	private static FrontServer server ;
 	public static int serverId = 0;
 	public static String localAddr = null;
 	public static int quorumSize = 3;
-	public int lastPosition = 0;
+	public int lastPosition = -1;
 	public HashMap<Integer, String> route;
 	public ArrayList<Proposal> GlobalLog;
 	public ArrayList<String> localLog;
@@ -46,7 +46,7 @@ public class FrontServer extends Server{
 	
 	public static synchronized FrontServer getInstance() throws IOException	{
 		if (server == null) {
-			System.out.println("init server");
+			System.out.println("init server" );
             server = new FrontServer();
 		}
 		return server;
@@ -82,6 +82,7 @@ public class FrontServer extends Server{
 	
 	public void initPaxos() throws IOException	{
 		paxosInstance = new Paxos(route);
+		//paxosInstance.addPost(new Post("test", -1, null));
 	}
 	
 	public void fail()	{
@@ -92,7 +93,9 @@ public class FrontServer extends Server{
 		isStop = false;
 	}
 	
-	
+	public boolean isStop ()	{
+		return isStop;
+	}
 	
 	@Override
 	public void clientWorker(Socket client)	{
@@ -105,8 +108,10 @@ public class FrontServer extends Server{
 			if( !isStop )	{
 				
 				if (msg.matches("POST:.*"))	{
-					System.out.println("exec post...");
-					//paxosInstance.addJob(msg);
+					msg = msg.replaceFirst("POST:", "");
+					Post post = new Post (msg, -1, client);
+					paxosInstance.addPost(post);
+					
 				}
 				
 				else if (msg.matches("READ"))	{
@@ -144,9 +149,10 @@ public class FrontServer extends Server{
 			
 			Receiver receiver = new Receiver (FrontServer.getInstance().paxosInstance);
 			Dispenser dispenser = new Dispenser(FrontServer.getInstance().paxosInstance);
-			//new Thread(FrontServer.getInstance()).start();
-			//new Thread(receiver).start();
-			//new Thread(dispenser).start();
+			new Thread(receiver).start();
+			new Thread(dispenser).start();
+			new Thread(FrontServer.getInstance()).start();
+			
 			CLI();
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -190,6 +196,11 @@ public class FrontServer extends Server{
 		
 		else if( command.matches("\\s*read\\s*"))	{
 			//todo
+		}
+		
+		else if (command.matches("exit"))	{
+			
+			System.exit(0);
 		}
 		
 	}
