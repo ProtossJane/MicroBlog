@@ -27,8 +27,11 @@ public class Proposer {
 	public void prepare()	{
 		isPendding = true;
 		promiseReceived.clear();
-		bal.proposalId += 1;
-		bal.positionId = server.lastPosition + 1;
+		if (Accepter.promisedBal!=null)
+			bal.proposalId = Accepter.promisedBal.proposalId + 1;
+		else
+			bal.proposalId += 1;
+		bal.positionId = server.currentPosition + 1;
 		System.out.println("ID "+ FrontServer.serverId + " broadcast prepare:"+bal);
 		//sender.broadCast("prepare:" + bal );
 		sender.send("prepare:" + bal, 1);
