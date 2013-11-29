@@ -24,6 +24,7 @@ public class Accepter {
 		
 		if( promisedBal == null )	{
 			promisedBal = bal;
+			System.out.println("acceptor processing...");
 			sender.send("promise:" + bal + ":" + acceptedProposal, bal.senderId);
 		}
 		

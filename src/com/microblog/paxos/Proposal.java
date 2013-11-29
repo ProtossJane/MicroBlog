@@ -11,6 +11,6 @@ public class Proposal {
 	}
 	
 	public String toString ()	{
-		return ballotNumber.toString() + ":" + message;
+		return ballotNumber + ":" + message;
 	}
 }

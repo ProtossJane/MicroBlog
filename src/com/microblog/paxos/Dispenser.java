@@ -55,7 +55,7 @@ public class Dispenser implements Runnable{
 				if ( types.length == 2)
 					switch ( types[0] )	{
 						case "prepare":
-							System.out.println("receive prepare");
+							respondPrepare( types[1] );
 							break;
 					
 						default:
@@ -69,8 +69,10 @@ public class Dispenser implements Runnable{
 	}
 	
 	public void respondPrepare( String parameter )	{
+		System.out.println("respond prepare");
 		String[] parameters = parameter.split(":");
 		if (parameters.length == 3)	{
+			paxosInstance.accepter.receivePrepare( new BallotNumber( Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])));
 			
 		}
 	}
