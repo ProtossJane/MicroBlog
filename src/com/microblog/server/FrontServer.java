@@ -26,8 +26,8 @@ public class FrontServer extends Server{
 	public static int quorumSize = 3;
 	public int currentPosition = -1;
 	public HashMap<Integer, String> route;
-	public ArrayList<Proposal> GlobalLog;
-	public ArrayList<String> localLog;
+	public ArrayList<Proposal> GlobalLog = new ArrayList<Proposal> ();
+	public ArrayList<String> localLog = new ArrayList<String> ();
 	
 	private FrontServer () throws IOException	{
 		super();

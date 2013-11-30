@@ -42,8 +42,8 @@ public class Sender {
 		try {
 			new paxosClient(route.get(dest), 9000 ).send(message);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			
 		}
 		
 	}

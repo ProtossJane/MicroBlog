@@ -5,9 +5,11 @@ public class Message {
 	String message;
 	int senderId;
 	
-	public Message (String message, int senderId)	{
-		this.message = message;
+	public Message (int senderId, String message )	{
+		
 		this.senderId = senderId;
+		this.message = message;
+		
 	}
 
 	public String toString ()	{

@@ -22,10 +22,10 @@ public class Accepter {
 		if (bal.positionId <= server.paxosInstance.maxPosition)
 			return; //or signal the sender for recovering
 		
+		
 		if( promisedBal == null )	{
-			promisedBal = bal;
-			System.out.println("acceptor processing...send to "+ bal.senderId);
-			sender.send("promise:" + bal + ":" + acceptedProposal, bal.senderId);
+			promisedBal = bal;		
+			sender.send("promise:" + bal + ":" + server.serverId + ":" + acceptedProposal, bal.senderId);
 		}
 		
 		else if ( bal.compareTo(promisedBal) == 0 || bal.compareTo(promisedBal) > 0 )	{
@@ -34,9 +34,11 @@ public class Accepter {
 			if ( acceptedProposal!=null && bal.positionId > acceptedProposal.ballotNumber.positionId)	
 				acceptedProposal = null;
 			
-			sender.send("promise:" + bal + ":" + acceptedProposal, bal.senderId);
+			sender.send("promise:" + bal + ":" + server.serverId + ": "+ acceptedProposal, bal.senderId);
 			
 		}
+		
+		System.out.println("acceptor processing...promise bal: "+ bal +" accept proposal:" + acceptedProposal);
 		
 	}
 	

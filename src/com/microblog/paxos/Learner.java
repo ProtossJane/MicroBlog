@@ -9,7 +9,7 @@ public class Learner {
 	
 	protected Sender sender;
 	protected int quorumSize = FrontServer.quorumSize;
-	protected HashMap<BallotNumber, Integer> proposals = null;
+	protected HashMap<BallotNumber, Integer> proposals = new HashMap<BallotNumber, Integer>();
 	protected FrontServer server = FrontServer.getInstance();
 	
 	
@@ -25,8 +25,10 @@ public class Learner {
 		if ( acceptedProposal.ballotNumber.positionId <= server.currentPosition)
 			return;
 		
-		if ( !proposals.containsKey( acceptedProposal.ballotNumber) )
+		if ( !proposals.containsKey( acceptedProposal.ballotNumber) )	{
 			proposals.put( new BallotNumber(acceptedProposal.ballotNumber), 0);
+			System.out.println("accected new proposal " + proposals.get(acceptedProposal.ballotNumber));
+		}
 		
 		int count = proposals.get(acceptedProposal.ballotNumber).intValue() + 1;
 		proposals.put(acceptedProposal.ballotNumber, count);
@@ -38,12 +40,13 @@ public class Learner {
 				if(acceptedProposal.ballotNumber.positionId > server.paxosInstance.maxPosition )
 					server.paxosInstance.maxPosition = acceptedProposal.ballotNumber.positionId;
 				server.paxosInstance.isRecover	= true;
-				server.paxosInstance.addRecover(acceptedProposal.ballotNumber.positionId, acceptedProposal);
+				server.paxosInstance.addDecide(acceptedProposal.ballotNumber.positionId, acceptedProposal);
 				return;
 			}
 			server.GlobalLog.add(acceptedProposal.ballotNumber.positionId, acceptedProposal);
 			server.currentPosition = acceptedProposal.ballotNumber.positionId;
 			server.paxosInstance.maxPosition = acceptedProposal.ballotNumber.positionId;
+			System.out.println("write proposal " + acceptedProposal);
 		}
 	}
 	

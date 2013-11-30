@@ -11,20 +11,23 @@ public class Paxos {
 	protected Sender sender;
 	protected volatile LinkedList<String> jobQueue;
 	protected volatile LinkedList<Post>	 postQueue;
+	protected volatile LinkedList<String> recoverQueue;
 	protected Proposer proposer;
 	protected Accepter accepter;
 	protected Learner learner;
 	protected int	maxPosition = -1;
 	protected boolean isRecover = false;
-	protected volatile HashMap< Integer,Proposal > recoverQueue = new HashMap <Integer, Proposal> ();
+	protected volatile HashMap< Integer,Proposal > decideBuffer;
 	
 	public Paxos (HashMap<Integer, String> route) throws IOException	{
 		sender 		= new Sender(route);
 		jobQueue 	= new LinkedList<String>();
 		postQueue 	= new LinkedList<Post>();
+		recoverQueue = new LinkedList<String>();
 		proposer 	= new Proposer (sender);
 		accepter 	= new Accepter (sender);
 		learner 	= new Learner (sender);
+		decideBuffer = new HashMap <Integer, Proposal> ();
 	}
 	
 	public synchronized void addPost (Post post)	{
@@ -51,11 +54,15 @@ public class Paxos {
 		return jobQueue.isEmpty();
 	}
 	
-	public synchronized void addRecover( Integer position, Proposal decidedProposal )	{
-		recoverQueue.put(position, decidedProposal);
+	public synchronized void addDecide( Integer position, Proposal decidedProposal )	{
+		decideBuffer.put(position, decidedProposal);
 	}
 	
 	public synchronized Proposal popRecover ( Integer position)	{
-		return recoverQueue.get(position);
+		return decideBuffer.get(position);
+	}
+	
+	public synchronized void addRecover (String recoverMsg)	{
+		recoverQueue.add(recoverMsg);
 	}
 }
