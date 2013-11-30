@@ -12,6 +12,8 @@ public class Learner {
 	protected HashMap<BallotNumber, Integer> proposals = null;
 	protected FrontServer server = FrontServer.getInstance();
 	
+	
+	
 	public Learner (Sender sender)	throws IOException{
 		
 		this.sender = sender;
@@ -20,7 +22,7 @@ public class Learner {
 	
 	public void receiveAccepted ( Proposal acceptedProposal )	{
 		
-		if ( acceptedProposal.ballotNumber.positionId <= server.lastPosition)
+		if ( acceptedProposal.ballotNumber.positionId <= server.currentPosition)
 			return;
 		
 		if ( !proposals.containsKey( acceptedProposal.ballotNumber) )
@@ -30,13 +32,18 @@ public class Learner {
 		proposals.put(acceptedProposal.ballotNumber, count);
 		
 		if (count == quorumSize)	{
-			if (acceptedProposal.ballotNumber.positionId > server.lastPosition + 1) 	{//gap
-				// recover
+			sender.broadCast("decide:" + acceptedProposal);
+			if (acceptedProposal.ballotNumber.positionId > server.currentPosition + 1) 	{//gap
+				
+				if(acceptedProposal.ballotNumber.positionId > server.paxosInstance.maxPosition )
+					server.paxosInstance.maxPosition = acceptedProposal.ballotNumber.positionId;
+				server.paxosInstance.isRecover	= true;
+				server.paxosInstance.addRecover(acceptedProposal.ballotNumber.positionId, acceptedProposal);
+				return;
 			}
 			server.GlobalLog.add(acceptedProposal.ballotNumber.positionId, acceptedProposal);
-			server.lastPosition = acceptedProposal.ballotNumber.positionId;
-			sender.broadCast("decide:" + acceptedProposal);
-			
+			server.currentPosition = acceptedProposal.ballotNumber.positionId;
+			server.paxosInstance.maxPosition = acceptedProposal.ballotNumber.positionId;
 		}
 	}
 	
@@ -45,4 +52,10 @@ public class Learner {
 	
 		
 	}
+	
+	public void recover()	{
+		System.out.println("send recover..");
+		
+	}
+	
 }

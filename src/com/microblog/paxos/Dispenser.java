@@ -21,49 +21,55 @@ public class Dispenser implements Runnable{
 	public void run() {
 		
 		while ( true )	{
-			
-			if ( isPostFinished() )	{
-				try {
-					if (currentPost != null)	{
-						PrintWriter outputstream = new PrintWriter (currentPost.socket.getOutputStream(), true);
-						if( server.GlobalLog.get(currentPost.position).message.senderId != FrontServer.serverId)
-							outputstream.println("fail");
-						else
-							outputstream.println("success");
+			if(!paxosInstance.isRecover && !server.isStop())	{
+				if ( isPostFinished() )	{
+					try {
+						if (currentPost != null)	{
+							PrintWriter outputstream = new PrintWriter (currentPost.socket.getOutputStream(), true);
+							if( server.GlobalLog.get(currentPost.position).message.senderId != FrontServer.serverId)
+								outputstream.println("fail");
+							else
+								outputstream.println("success");
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
-				} catch (IOException e) {
-					e.printStackTrace();
+					
+					//System.out.println("post queue length: " + paxosInstance.postQueue.isEmpty());
+	
+					if (!paxosInstance.isPostEmpty() )	{
+						
+						currentPost = paxosInstance.popPost();
+						currentPost.position = server.currentPosition + 1;
+						System.out.println("get post queue..." + currentPost);
+						paxosInstance.proposer.setProposal( new Message (currentPost.message, FrontServer.serverId));
+						paxosInstance.proposer.prepare();
+						
+					}
 				}
 				
-				//System.out.println("post queue length: " + paxosInstance.postQueue.isEmpty());
-
-				if (!paxosInstance.isPostEmpty() )	{
+				if ( !paxosInstance.isJobEmpty() )	{
 					
-					currentPost = paxosInstance.popPost();
-					currentPost.position = server.lastPosition + 1;
-					System.out.println("get post queue..." + currentPost);
-					paxosInstance.proposer.setProposal( new Message (currentPost.message, FrontServer.serverId));
-					paxosInstance.proposer.prepare();
+					String currentJob 	= paxosInstance.popJob();
+					String[] types		= currentJob.split(":",2);
+					if ( types.length == 2)
+						switch ( types[0] )	{
+							case "prepare":
+								respondPrepare( types[1] );
+								break;
+						
+							default:
+								break;
+						}
 					
 				}
+			
 			}
 			
-			if ( !paxosInstance.isJobEmpty() )	{
-				
-				String currentJob 	= paxosInstance.popJob();
-				String[] types		= currentJob.split(":",2);
-				if ( types.length == 2)
-					switch ( types[0] )	{
-						case "prepare":
-							respondPrepare( types[1] );
-							break;
-					
-						default:
-							break;
-					}
+			else if( server.paxosInstance.isRecover && !server.isStop())	{
+				//recover
 				
 			}
-			
 		}
 		
 	}
@@ -78,7 +84,7 @@ public class Dispenser implements Runnable{
 	}
 	
 	public boolean isPostFinished ()	{
-		if (currentPost == null || server.lastPosition >= currentPost.position)
+		if (currentPost == null || server.currentPosition >= currentPost.position)
 			return true;
 		return false;
 			

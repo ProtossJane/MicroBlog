@@ -14,7 +14,10 @@ public class Paxos {
 	protected Proposer proposer;
 	protected Accepter accepter;
 	protected Learner learner;
-
+	protected int	maxPosition = -1;
+	protected boolean isRecover = false;
+	protected volatile HashMap< Integer,Proposal > recoverQueue = new HashMap <Integer, Proposal> ();
+	
 	public Paxos (HashMap<Integer, String> route) throws IOException	{
 		sender 		= new Sender(route);
 		jobQueue 	= new LinkedList<String>();
@@ -46,5 +49,13 @@ public class Paxos {
 	
 	public synchronized boolean isJobEmpty()	{
 		return jobQueue.isEmpty();
+	}
+	
+	public synchronized void addRecover( Integer position, Proposal decidedProposal )	{
+		recoverQueue.put(position, decidedProposal);
+	}
+	
+	public synchronized Proposal popRecover ( Integer position)	{
+		return recoverQueue.get(position);
 	}
 }

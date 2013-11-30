@@ -7,7 +7,7 @@ import com.microblog.server.FrontServer;
 public class Accepter {
 	
 	protected Sender sender;
-	protected BallotNumber promisedBal  = null;
+	protected static BallotNumber promisedBal  = null;
 	protected Proposal acceptedProposal = null;
 	protected FrontServer server 		= FrontServer.getInstance();
 	
@@ -19,7 +19,7 @@ public class Accepter {
 	
 	public void receivePrepare( BallotNumber bal )	{
 		
-		if (bal.positionId <= server.lastPosition )
+		if (bal.positionId <= server.paxosInstance.maxPosition)
 			return; //or signal the sender for recovering
 		
 		if( promisedBal == null )	{
@@ -30,9 +30,10 @@ public class Accepter {
 		
 		else if ( bal.compareTo(promisedBal) == 0 || bal.compareTo(promisedBal) > 0 )	{
 			
-			if ( bal.positionId > server.lastPosition + 1)	
-				acceptedProposal = null;
 			promisedBal = bal;
+			if ( acceptedProposal!=null && bal.positionId > acceptedProposal.ballotNumber.positionId)	
+				acceptedProposal = null;
+			
 			sender.send("promise:" + bal + ":" + acceptedProposal, bal.senderId);
 			
 		}

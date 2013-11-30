@@ -24,7 +24,7 @@ public class FrontServer extends Server{
 	public static int serverId = 0;
 	public static String localAddr = null;
 	public static int quorumSize = 3;
-	public int lastPosition = -1;
+	public int currentPosition = -1;
 	public HashMap<Integer, String> route;
 	public ArrayList<Proposal> GlobalLog;
 	public ArrayList<String> localLog;
