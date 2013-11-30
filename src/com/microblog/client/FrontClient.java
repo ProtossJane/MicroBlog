@@ -15,6 +15,7 @@ public class FrontClient extends Client {
 		try {
 			FrontClient client = new FrontClient ("127.0.0.1",8000);
 			client.send("POST:test");
+			//client.send("promise:1:1:0:null");
 			//System.out.println ( "response: "+ client.receive());
 			
 			

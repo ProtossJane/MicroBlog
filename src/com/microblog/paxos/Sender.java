@@ -27,15 +27,25 @@ public class Sender {
 	
 	public void send (String message, int dest)	{
 		
-		if ( !clientList.containsKey(dest))
+		/*if ( !clientList.containsKey(dest))
 			try {
+				System.out.println("init channel to "+ "server "+dest);
 				clientList.put(dest, new paxosClient(route.get(dest), 9000 ));
 			} catch (IOException e) {
 				System.out.println("can not connet to " + route.get(dest));
 				return;
 				//e.printStackTrace();
 			}
-		clientList.get(dest).send(message);
+		System.out.println("sending " + message);
+		clientList.get(dest).send(message);*/
+		
+		try {
+			new paxosClient(route.get(dest), 9000 ).send(message);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void broadCast (String message)	{

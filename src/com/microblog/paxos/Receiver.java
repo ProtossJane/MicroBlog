@@ -23,6 +23,7 @@ public class Receiver extends Server{
 	@Override
 	public void clientWorker(Socket client)	{
 
+			System.out.println("invoke client worker");
 			try {
 				BufferedReader inputstream = new BufferedReader( new InputStreamReader( client.getInputStream()));
 				String msg = inputstream.readLine();
