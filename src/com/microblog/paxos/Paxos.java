@@ -3,6 +3,7 @@ package com.microblog.paxos;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Timer;
 
 import com.microblog.server.Post;
 
@@ -18,6 +19,7 @@ public class Paxos {
 	protected int	maxPosition = -1;
 	protected boolean isRecover = false;
 	protected volatile HashMap< Integer,Proposal > decideBuffer;
+	protected Timer	recoverTimer;
 	
 	public Paxos (HashMap<Integer, String> route) throws IOException	{
 		sender 		= new Sender(route);
@@ -28,6 +30,8 @@ public class Paxos {
 		accepter 	= new Accepter (sender);
 		learner 	= new Learner (sender);
 		decideBuffer = new HashMap <Integer, Proposal> ();
+		recoverTimer = new Timer();
+		recoverTimer.scheduleAtFixedRate(new Recover(), 2000, 5000);
 	}
 	
 	public synchronized void addPost (Post post)	{
@@ -58,7 +62,7 @@ public class Paxos {
 		decideBuffer.put(position, decidedProposal);
 	}
 	
-	public synchronized Proposal popRecover ( Integer position)	{
+	public synchronized Proposal popDecide ( Integer position)	{
 		return decideBuffer.get(position);
 	}
 	

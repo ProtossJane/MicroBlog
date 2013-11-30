@@ -8,7 +8,7 @@ import com.microblog.server.Post;
 
 public class Dispenser implements Runnable{
 
-	
+	// todo: post time out
 	protected Post currentPost;
 	protected FrontServer server = FrontServer.getInstance();
 	protected Paxos paxosInstance;
@@ -159,10 +159,21 @@ public class Dispenser implements Runnable{
 		int dest = Integer.parseInt(parameters[1]);
 		int recoverPosition = Integer.parseInt(parameters[2]);
 		if (  recoverPosition < server.currentPosition)	{
-			paxosInstance.sender.send("respondrecover:" + server.currentPosition, dest);
+			paxosInstance.sender.send("respondrecover:" + FrontServer.serverId +":" + server.currentPosition, dest);
 			for (int i = recoverPosition; i <= server.currentPosition; ++i)	
 				paxosInstance.sender.send(server.GlobalLog.get(i).toString(), dest);
 		}
+	}
+	
+	public void processRecoverRespond (String parameter)	{
+		
+		System.out.println("process recover respond");
+		String[] parameters = parameter.split(":", 3);
+		int senderId = Integer.parseInt(parameters[1]);
+		int positionId = Integer.parseInt(parameters[2]);
+		
+		paxosInstance.learner.receiveRecoverRespond(senderId, positionId);
+		
 	}
 	
 	public boolean isPostFinished ()	{

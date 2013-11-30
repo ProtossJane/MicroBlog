@@ -10,6 +10,8 @@ public class Learner {
 	protected Sender sender;
 	protected int quorumSize = FrontServer.quorumSize;
 	protected HashMap<BallotNumber, Integer> proposals = new HashMap<BallotNumber, Integer>();
+	protected HashMap<Integer, Integer> recoverRespond = new HashMap<Integer, Integer>();
+	protected boolean recoverReady = false;
 	protected FrontServer server = FrontServer.getInstance();
 	
 	
@@ -56,8 +58,15 @@ public class Learner {
 		
 	}
 	
-	public void recover()	{
-		System.out.println("send recover..");
+	public void receiveRecoverRespond(int senderId, int positionId)	{
+		
+		if ( !recoverRespond.containsKey(senderId) || recoverRespond.get(senderId).intValue() < positionId )
+			recoverRespond.put(senderId, positionId);
+		if (positionId > server.paxosInstance.maxPosition)
+			server.paxosInstance.maxPosition = positionId;
+		
+		if ( recoverRespond.size() >= FrontServer.quorumSize )
+			recoverReady = true;
 		
 	}
 	
