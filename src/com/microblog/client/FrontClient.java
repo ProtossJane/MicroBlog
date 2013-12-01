@@ -17,7 +17,7 @@ public class FrontClient extends Client {
 		
 		try {
 
-			client = new FrontClient ("127.0.0.1",8200);
+			client = new FrontClient ("127.0.0.1",8000);
 			CLI();
 			//client.send("POST:test");
 			//client.send("accepted:1:1:0:1:test");
