@@ -34,7 +34,7 @@ public class FrontServer extends Server{
 		isStop = false;
 		route = new HashMap<Integer, String>();
 		setRoutingTable();
-		super.bind(localAddr, 8000);
+		super.bind(localAddr, 8200);
 	}
 	
 	private FrontServer (String host, int port) throws IOException	{
@@ -147,7 +147,8 @@ public class FrontServer extends Server{
 	
 	public static void main( String[] args)	{
 
-		serverId = Integer.valueOf( args[0] );
+		//serverId = Integer.valueOf( args[0] );
+		serverId = 1;
 		try {
 			FrontServer.getInstance().initPaxos();
 			
