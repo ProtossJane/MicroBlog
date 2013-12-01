@@ -30,7 +30,7 @@ public class Receiver extends Server{
 				if( !FrontServer.getInstance().isStop() )	{
 					if ( paxosInstance.isRecover)	{
 						if ( msg.matches("respondrecover:.*") || msg.matches( "decied:.*"))
-							paxosInstance.addRecover(msg);
+							paxosInstance.addRecoverJob(msg);
 					}
 					
 					

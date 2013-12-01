@@ -54,7 +54,16 @@ public class Learner {
 	
 	public void receiveDecide ( Proposal decidedProposal)	{
 		
-	
+		if ( decidedProposal.ballotNumber.positionId == server.currentPosition + 1 )	{
+			server.GlobalLog.add(decidedProposal);
+			server.currentPosition += 1;
+		}
+		
+		else if ( decidedProposal.ballotNumber.positionId > server.currentPosition + 1 )	{
+			server.paxosInstance.addDecide( decidedProposal.ballotNumber.positionId, decidedProposal);
+			if( decidedProposal.ballotNumber.positionId > server.paxosInstance.maxPosition )
+				server.paxosInstance.maxPosition = decidedProposal.ballotNumber.positionId;
+		}
 		
 	}
 	

@@ -78,8 +78,32 @@ public class Dispenser implements Runnable{
 			
 			}
 			
-			else if( server.paxosInstance.isRecover && !server.isStop())	{
+			else if( paxosInstance.isRecover && !server.isStop())	{
 				
+				if ( !paxosInstance.recoverQueue.isEmpty() )	{
+					String recoverJob	=	server.paxosInstance.popRecoverJob();
+					String[] types		= recoverJob.split(":",2);
+					if ( types.length == 2)
+						switch ( types[1] )	{
+							case "recoverrespond" :
+								processRecoverRespond( types[2] );
+								break;
+							case "decide" :
+								respondDecide( types[2] );
+								break;
+							default:
+								break;
+							
+						}
+					
+				}
+				
+				if ( paxosInstance.learner.recoverReady && paxosInstance.maxPosition == server.currentPosition)	{
+					paxosInstance.isRecover = false;
+					paxosInstance.learner.recoverReady = false;
+					paxosInstance.learner.recoverRespond.clear();
+					
+				}
 				
 			}
 		}

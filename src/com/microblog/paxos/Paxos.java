@@ -31,7 +31,7 @@ public class Paxos {
 		learner 	= new Learner (sender);
 		decideBuffer = new HashMap <Integer, Proposal> ();
 		recoverTimer = new Timer();
-		recoverTimer.scheduleAtFixedRate(new Recover(), 2000, 5000);
+		recoverTimer.scheduleAtFixedRate(new Recover( sender), 2000, 5000);
 	}
 	
 	public synchronized void addPost (Post post)	{
@@ -66,7 +66,11 @@ public class Paxos {
 		return decideBuffer.get(position);
 	}
 	
-	public synchronized void addRecover (String recoverMsg)	{
+	public synchronized void addRecoverJob (String recoverMsg)	{
 		recoverQueue.add(recoverMsg);
+	}
+	
+	public synchronized String popRecoverJob ()	{
+		return recoverQueue.poll();
 	}
 }
