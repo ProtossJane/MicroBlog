@@ -179,9 +179,9 @@ public class Dispenser implements Runnable{
 	public void respondRecover(String parameter) {
 		
 		System.out.println("respond recover");
-		String[] parameters = parameter.split(":", 3);
-		int dest = Integer.parseInt(parameters[1]);
-		int recoverPosition = Integer.parseInt(parameters[2]);
+		String[] parameters = parameter.split(":", 2);
+		int dest = Integer.parseInt(parameters[0]);
+		int recoverPosition = Integer.parseInt(parameters[1]);
 		if (  recoverPosition < server.currentPosition)	{
 			paxosInstance.sender.send("respondrecover:" + FrontServer.serverId +":" + server.currentPosition, dest);
 			for (int i = recoverPosition; i <= server.currentPosition; ++i)	
