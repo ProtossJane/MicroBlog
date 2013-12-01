@@ -113,7 +113,7 @@ public class FrontServer extends Server{
 				
 				if (msg.matches("POST:.*"))	{
 					msg = msg.replaceFirst("POST:", "");
-					Post post = new Post (msg, -1, client);
+					Post post = new Post (msg, -1, client, System.currentTimeMillis());
 					paxosInstance.addPost(post);
 					
 				}

@@ -9,11 +9,11 @@ public class Post {
 	public int position;
 	public long timeStamp;
 	
-	public Post (String message, int position, Socket socket)	{
+	public Post (String message, int position, Socket socket, long timeStamp)	{
 		this.message  	= message;
 		this.position 	= position;
 		this.socket   	= socket;
-		this.timeStamp	= 0; 
+		this.timeStamp	= timeStamp; 
 	}
 	
 	public String toString ()	{

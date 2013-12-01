@@ -34,14 +34,14 @@ public class Dispenser implements Runnable{
 						System.out.println("get post queue..." + currentPost);
 						paxosInstance.proposer.setProposal( new Message ( FrontServer.serverId, currentPost.message));
 						paxosInstance.proposer.prepare();
-						currentPost.timeStamp = System.currentTimeMillis();
+						//currentPost.timeStamp = System.currentTimeMillis();
 					}
 				}
 				
-				else if (System.currentTimeMillis() - currentPost.timeStamp > 10000)	{
+				/*else if (System.currentTimeMillis() - currentPost.timeStamp > 10000)	{
 					respondPost (currentPost, "fail"); //timeout
 					currentPost = null;
-				}
+				}*/
 				
 				
 				if ( !paxosInstance.isJobEmpty() )	{
@@ -99,7 +99,6 @@ public class Dispenser implements Runnable{
 								break;
 							
 						}
-					
 				}
 				
 				if (!paxosInstance.decideBuffer.isEmpty())	{
@@ -115,6 +114,20 @@ public class Dispenser implements Runnable{
 					
 				}
 				
+			}
+			
+			if ( !paxosInstance.postQueue.isEmpty() )	{
+				if (System.currentTimeMillis() - paxosInstance.postQueue.peek().timeStamp > 10000 )	{
+					respondPost (paxosInstance.postQueue.peek(), "fail");
+					System.out.println("************************************post " +  paxosInstance.postQueue.peek() + " Time out ");
+					paxosInstance.postQueue.poll();
+				}
+			}
+			
+			if ( currentPost!=null && System.currentTimeMillis() - currentPost.timeStamp > 10000 )	{
+				respondPost (currentPost, "fail");
+				System.out.println("************************************post " +  currentPost + " Time out ");
+				currentPost = null;
 			}
 		}
 		

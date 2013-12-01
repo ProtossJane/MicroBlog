@@ -16,7 +16,8 @@ public class Recover extends TimerTask {
 	public void run() {
 		
 		//System.out.println("sending recover");
-		sender.broadCast( "recover:" + FrontServer.serverId + ":" + server.currentPosition);
+		if (!server.isStop())
+			sender.broadCast( "recover:" + FrontServer.serverId + ":" + server.currentPosition);
 		
 	}
 
