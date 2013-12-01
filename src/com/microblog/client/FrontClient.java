@@ -50,14 +50,15 @@ public class FrontClient extends Client {
 		}
 	}
 	
-	public static void parser (String command)	{
+	public static void parser (String command) throws IOException	{
 		
-		if ( command.toLowerCase().matches("\\s*post\\s*(.*)") )	{
+		if ( command.matches("POST:.*") )	{
 			client.send(command);
 		}
 		
-		else if( command.toLowerCase().matches("\\s*read\\s*"))	{
-			//todo
+		else if( command.matches("READ"))	{
+			client.send(command);
+			System.out.println(client.receive());
 		}
 		
 		else if (command.matches("exit"))	{
