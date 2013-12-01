@@ -58,7 +58,7 @@ public class FrontClient extends Client {
 		
 		else if( command.matches("READ"))	{
 			client.send(command);
-			System.out.println(client.receive());
+			//System.out.println(client.receive());
 		}
 		
 		else if (command.matches("exit"))	{

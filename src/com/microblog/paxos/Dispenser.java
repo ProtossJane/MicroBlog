@@ -38,8 +38,10 @@ public class Dispenser implements Runnable{
 					}
 				}
 				
-				else if (System.currentTimeMillis() - currentPost.timeStamp > 10000)
+				else if (System.currentTimeMillis() - currentPost.timeStamp > 10000)	{
 					respondPost (currentPost, "fail"); //timeout
+					currentPost = null;
+				}
 				
 				
 				if ( !paxosInstance.isJobEmpty() )	{
@@ -92,6 +94,12 @@ public class Dispenser implements Runnable{
 							
 						}
 					
+				}
+				
+				if (!paxosInstance.decideBuffer.isEmpty())	{
+					Proposal decidedProposal = paxosInstance.popDecide( server.currentPosition + 1 );
+					if ( decidedProposal != null )
+						server.GlobalLog.add(decidedProposal);
 				}
 				
 				if ( paxosInstance.learner.recoverReady && paxosInstance.maxPosition == server.currentPosition)	{
@@ -186,13 +194,13 @@ public class Dispenser implements Runnable{
 	public void respondRecover(String parameter) {
 		
 		System.out.println("respond recover");
-		String[] parameters = parameter.split(":", 2);
+		String[] parameters = parameter.split(":", 3);
 		int dest = Integer.parseInt(parameters[0]);
 		int recoverPosition = Integer.parseInt(parameters[1]);
 		if (  recoverPosition < server.currentPosition)	{
 			paxosInstance.sender.send("respondrecover:" + FrontServer.serverId +":" + server.currentPosition, dest);
-			for (int i = recoverPosition; i <= server.currentPosition; ++i)	
-				paxosInstance.sender.send(server.GlobalLog.get(i).toString(), dest);
+			for (int i = recoverPosition + 1; i <= server.currentPosition; ++i)	
+				paxosInstance.sender.send("decide:"+server.GlobalLog.get(i).toString(), dest);
 		}
 	}
 	

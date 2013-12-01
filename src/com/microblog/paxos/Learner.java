@@ -48,7 +48,7 @@ public class Learner {
 			server.GlobalLog.add(acceptedProposal.ballotNumber.positionId, acceptedProposal);
 			server.currentPosition = acceptedProposal.ballotNumber.positionId;
 			server.paxosInstance.maxPosition = acceptedProposal.ballotNumber.positionId;
-			System.out.println("write proposal " + acceptedProposal);
+			System.out.println("***********write proposal********** " + acceptedProposal);
 		}
 	}
 	
@@ -57,6 +57,7 @@ public class Learner {
 		if ( decidedProposal.ballotNumber.positionId == server.currentPosition + 1 )	{
 			server.GlobalLog.add(decidedProposal);
 			server.currentPosition += 1;
+			System.out.println("***********write proposal********** " + decidedProposal);
 		}
 		
 		else if ( decidedProposal.ballotNumber.positionId > server.currentPosition + 1 )	{
