@@ -8,11 +8,9 @@ import com.microblog.server.Post;
 
 public class Dispenser implements Runnable{
 
-	// todo: post time out
 	protected Post currentPost;
 	protected FrontServer server = FrontServer.getInstance();
 	protected Paxos paxosInstance;
-	
 	public Dispenser( Paxos paxos) throws IOException	{
 		this.paxosInstance = paxos;
 		
@@ -23,18 +21,12 @@ public class Dispenser implements Runnable{
 		while ( true )	{
 			if(!paxosInstance.isRecover && !server.isStop())	{
 				if ( isPostFinished() )	{
-					try {
 						if (currentPost != null)	{
-							PrintWriter outputstream = new PrintWriter (currentPost.socket.getOutputStream(), true);
 							if( server.GlobalLog.get(currentPost.position).message.senderId != FrontServer.serverId)
-								outputstream.println("fail");
+								respondPost(currentPost , "fail");
 							else
-								outputstream.println("success");
+								respondPost(currentPost , "success");
 						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-
 					if (!paxosInstance.isPostEmpty() )	{
 						
 						currentPost = paxosInstance.popPost();
@@ -42,9 +34,13 @@ public class Dispenser implements Runnable{
 						System.out.println("get post queue..." + currentPost);
 						paxosInstance.proposer.setProposal( new Message ( FrontServer.serverId, currentPost.message));
 						paxosInstance.proposer.prepare();
-						
+						currentPost.timeStamp = System.currentTimeMillis();
 					}
 				}
+				
+				else if (System.currentTimeMillis() - currentPost.timeStamp > 10000)
+					respondPost (currentPost, "fail"); //timeout
+				
 				
 				if ( !paxosInstance.isJobEmpty() )	{
 					
@@ -110,6 +106,17 @@ public class Dispenser implements Runnable{
 		
 	}
 	
+	
+	public void respondPost (Post currentPost, String status)	{
+		
+		if ( currentPost!=null )
+			try {
+				PrintWriter outputstream = new PrintWriter (currentPost.socket.getOutputStream(), true);
+				outputstream.println(status);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	}
 	
 	public void respondPrepare( String parameter )	{
 		System.out.println("respond prepare");
