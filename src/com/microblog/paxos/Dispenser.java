@@ -79,15 +79,21 @@ public class Dispenser implements Runnable{
 			else if( paxosInstance.isRecover && !server.isStop())	{
 				
 				if ( !paxosInstance.recoverQueue.isEmpty() )	{
+					
 					String recoverJob	=	server.paxosInstance.popRecoverJob();
+					System.out.println("get recover queue " + recoverJob);
 					String[] types		= recoverJob.split(":",2);
 					if ( types.length == 2)
-						switch ( types[1] )	{
-							case "recoverrespond" :
-								processRecoverRespond( types[2] );
+						switch ( types[0] )	{
+						
+							case "recover":
+								respondRecover( types[1] );
+								break;
+							case "recover_respond" :
+								processRecoverRespond( types[1] );
 								break;
 							case "decide" :
-								respondDecide( types[2] );
+								respondDecide( types[1] );
 								break;
 							default:
 								break;
@@ -197,19 +203,18 @@ public class Dispenser implements Runnable{
 		String[] parameters = parameter.split(":", 3);
 		int dest = Integer.parseInt(parameters[0]);
 		int recoverPosition = Integer.parseInt(parameters[1]);
-		if (  recoverPosition < server.currentPosition)	{
-			paxosInstance.sender.send("respondrecover:" + FrontServer.serverId +":" + server.currentPosition, dest);
-			for (int i = recoverPosition + 1; i <= server.currentPosition; ++i)	
-				paxosInstance.sender.send("decide:"+server.GlobalLog.get(i).toString(), dest);
-		}
+		paxosInstance.sender.send("recover_respond:" + FrontServer.serverId +":" + server.currentPosition, dest);
+		for (int i = recoverPosition + 1; i <= server.currentPosition; ++i)	
+			paxosInstance.sender.send("decide:"+server.GlobalLog.get(i).toString(), dest);
+		
 	}
 	
 	public void processRecoverRespond (String parameter)	{
 		
 		System.out.println("process recover respond");
 		String[] parameters = parameter.split(":", 3);
-		int senderId = Integer.parseInt(parameters[1]);
-		int positionId = Integer.parseInt(parameters[2]);
+		int senderId = Integer.parseInt(parameters[0]);
+		int positionId = Integer.parseInt(parameters[1]);
 		
 		paxosInstance.learner.receiveRecoverRespond(senderId, positionId);
 		

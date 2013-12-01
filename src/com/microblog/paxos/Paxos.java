@@ -17,7 +17,7 @@ public class Paxos {
 	protected Accepter accepter;
 	protected Learner learner;
 	protected int	maxPosition = -1;
-	protected boolean isRecover = true;
+	protected volatile boolean isRecover = true;
 	protected volatile HashMap< Integer,Proposal > decideBuffer;
 	protected Timer	recoverTimer;
 	
@@ -34,11 +34,11 @@ public class Paxos {
 		recoverTimer.scheduleAtFixedRate(new Recover( sender), 2000, 10000);
 	}
 	
-	public void setRecoverStatus ()	{
+	public synchronized void setRecoverStatus ()	{
 		isRecover = true;
 	}
 	
-	public boolean getRecoverStatus () {
+	public synchronized boolean getRecoverStatus () {
 		return isRecover;
 	}
 	

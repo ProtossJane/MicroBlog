@@ -28,8 +28,9 @@ public class Receiver extends Server{
 				String msg = inputstream.readLine();
 				System.out.println( "get msg from paxos:" + msg );
 				if( !FrontServer.getInstance().isStop() )	{
-					if ( paxosInstance.isRecover)	{
-						if ( msg.matches("respondrecover:.*") || msg.matches( "decied:.*"))
+					if ( paxosInstance.getRecoverStatus())	{
+						//System.out.println( "add to recover queue:" + msg );
+						if ( msg.matches("recover_respond:.*") || msg.matches( "decide:.*") || msg.matches("recover:.*"))
 							paxosInstance.addRecoverJob(msg);
 					}
 					
