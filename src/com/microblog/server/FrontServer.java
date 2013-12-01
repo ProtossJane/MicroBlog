@@ -147,8 +147,8 @@ public class FrontServer extends Server{
 	
 	public static void main( String[] args)	{
 
-		//serverId = Integer.valueOf( args[0] );
-		serverId = 1;
+		serverId = Integer.valueOf( args[0] );
+
 		try {
 			FrontServer.getInstance().initPaxos();
 			
