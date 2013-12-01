@@ -90,7 +90,11 @@ public class FrontServer extends Server{
 	}
 	
 	public void unfail()	{
-		isStop = false;
+		
+		if ( isStop)	{
+			paxosInstance.setRecoverStatus();
+			isStop = false;
+		}
 	}
 	
 	public boolean isStop ()	{

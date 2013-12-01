@@ -34,6 +34,14 @@ public class Paxos {
 		recoverTimer.scheduleAtFixedRate(new Recover( sender), 2000, 5000);
 	}
 	
+	public void setRecoverStatus ()	{
+		isRecover = true;
+	}
+	
+	public boolean getRecoverStatus () {
+		return isRecover;
+	}
+	
 	public synchronized void addPost (Post post)	{
 		postQueue.add(post);
 	}
