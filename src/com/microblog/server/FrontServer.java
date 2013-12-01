@@ -34,7 +34,7 @@ public class FrontServer extends Server{
 		isStop = false;
 		route = new HashMap<Integer, String>();
 		setRoutingTable();
-		super.bind(localAddr, 8200);
+		super.bind(localAddr, 8000);
 	}
 	
 	private FrontServer (String host, int port) throws IOException	{
@@ -120,6 +120,9 @@ public class FrontServer extends Server{
 				
 				else if (msg.matches("READ"))	{
 					System.out.println("exec read...");
+					for (Proposal p : GlobalLog)	{
+						System.out.println( p );
+					}
 				}
 				
 				outputstream.println("success");
