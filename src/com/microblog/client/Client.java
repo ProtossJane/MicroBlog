@@ -16,7 +16,7 @@ public abstract class Client {
 	
 	public Client ()
 	{
-		
+		socket = new Socket();
 	}
 	
 	public Client( String host, int port) throws UnknownHostException, IOException	{

@@ -54,7 +54,9 @@ public class Proposer {
 		
 		if (promiseReceived.size() == FrontServer.quorumSize)	{
 			System.out.println("reach majority for " + bal);
-			sender.broadCast("accept:" + bal + ":" + message);
+			isPendding = false;
+			if ( message.message != null)
+				sender.broadCast("accept:" + bal + ":" + message);
 		}
 		
 		System.out.println("# of promise:" + promiseReceived.size());

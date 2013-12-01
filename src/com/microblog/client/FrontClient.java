@@ -1,25 +1,51 @@
 package com.microblog.client;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.HashMap;
 
 public class FrontClient extends Client {
 
-	private static FrontClient client;
+	//private static FrontClient client;
+	//public static HashMap<Integer, String> route = new HashMap<Integer, String>();
 	
 	public FrontClient (String host, int port) throws IOException	{
+		
 		super(host, port);
+		
 	}
 	
+	public static void setRoutingTable(HashMap<Integer, String> route)	{
+			
+			try {
+				BufferedReader reader = new BufferedReader( new FileReader(System.getProperty("user.dir") + "/route") ) ;
+				String s;
+				try {
+					while ( (s = reader.readLine()) !=null)	{
+						String[] par = s.split(":");
+						route.put(Integer.valueOf(par[0]), par[1]);
+						
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 	
 	public static void main ( String args[])	{
 		
+		HashMap<Integer, String> route = new HashMap<Integer, String>();
+		setRoutingTable( route );
 		try {
-
-			client = new FrontClient ("127.0.0.1",8000);
-			CLI();
-			//client.send("POST:test");
+			
+			FrontClient client = new FrontClient ( route.get(Integer.parseInt(args[0])),8000);
+			//CLI();
+			client.send(args[1]);
 			//client.send("accepted:1:1:0:1:test");
 			//System.out.println ( "response: "+ client.receive());
 			
@@ -32,7 +58,7 @@ public class FrontClient extends Client {
 	}
 
 	
-	public static void CLI ()	{
+	/*public static void CLI ()	{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String command = null;
 		
@@ -66,5 +92,5 @@ public class FrontClient extends Client {
 			System.exit(0);
 		}
 		
-	}
+	}*/
 }

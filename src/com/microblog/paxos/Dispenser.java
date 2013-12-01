@@ -19,29 +19,27 @@ public class Dispenser implements Runnable{
 	public void run() {
 		
 		while ( true )	{
+			
+			if ( server.isStop() )	{
+				respondPost (currentPost, "fail");
+				currentPost = null;
+			}
+			
 			if(!paxosInstance.isRecover && !server.isStop())	{
 				if ( isPostFinished() )	{
 						if (currentPost != null)	{
-							if( server.GlobalLog.get(currentPost.position).message.senderId != FrontServer.serverId)
+							if( currentPost.message != null && server.GlobalLog.get(currentPost.position).message.senderId != FrontServer.serverId)
 								respondPost(currentPost , "fail");
 							else
 								respondPost(currentPost , "success");
 						}
-					if (!paxosInstance.isPostEmpty() )	{
-						
+					if (!paxosInstance.isPostEmpty() )	{						
 						currentPost = paxosInstance.popPost();
-						currentPost.position = server.currentPosition + 1;
-						System.out.println("get post queue..." + currentPost);
-						paxosInstance.proposer.setProposal( new Message ( FrontServer.serverId, currentPost.message));
-						paxosInstance.proposer.prepare();
-						//currentPost.timeStamp = System.currentTimeMillis();
+						preparePost (currentPost);
+
 					}
 				}
 				
-				/*else if (System.currentTimeMillis() - currentPost.timeStamp > 10000)	{
-					respondPost (currentPost, "fail"); //timeout
-					currentPost = null;
-				}*/
 				
 				
 				if ( !paxosInstance.isJobEmpty() )	{
@@ -111,6 +109,8 @@ public class Dispenser implements Runnable{
 					paxosInstance.isRecover = false;
 					paxosInstance.learner.recoverReady = false;
 					paxosInstance.learner.recoverRespond.clear();
+					//if (paxosInstance.postQueue.isEmpty()) 	
+					paxosInstance.postQueue.addFirst(new Post (null, server.currentPosition + 1, null, System.currentTimeMillis()));
 					
 				}
 				
@@ -118,25 +118,33 @@ public class Dispenser implements Runnable{
 			
 			if ( !paxosInstance.postQueue.isEmpty() )	{
 				if (System.currentTimeMillis() - paxosInstance.postQueue.peek().timeStamp > 10000 )	{
-					respondPost (paxosInstance.postQueue.peek(), "fail");
-					System.out.println("************************************post " +  paxosInstance.postQueue.peek() + " Time out ");
-					paxosInstance.postQueue.poll();
+					//respondPost (paxosInstance.postQueue.peek(), "fail");
+					//System.out.println("************************************post " +  paxosInstance.postQueue.peek() + " Time out ");
+					//paxosInstance.postQueue.poll();
 				}
 			}
 			
 			if ( currentPost!=null && System.currentTimeMillis() - currentPost.timeStamp > 10000 )	{
-				respondPost (currentPost, "fail");
-				System.out.println("************************************post " +  currentPost + " Time out ");
-				currentPost = null;
+				//respondPost (currentPost, "fail");
+				//System.out.println("************************************post " +  currentPost + " Time out ");
+				//currentPost = null;
 			}
 		}
 		
 	}
 	
 	
+	public void preparePost (Post post)	{
+		
+		post.position = server.currentPosition + 1;
+		System.out.println("process post ..." + post);
+		paxosInstance.proposer.setProposal( new Message ( FrontServer.serverId, post.message));
+		paxosInstance.proposer.prepare();
+	}
+	
 	public void respondPost (Post currentPost, String status)	{
 		
-		if ( currentPost!=null )
+		if ( currentPost!=null && currentPost.socket!= null )
 			try {
 				PrintWriter outputstream = new PrintWriter (currentPost.socket.getOutputStream(), true);
 				outputstream.println(status);
@@ -211,7 +219,7 @@ public class Dispenser implements Runnable{
 	}
 	
 	public void respondRecover(String parameter) {
-		
+		if ( paxosInstance.isRecover )
 		System.out.println("respond recover");
 		String[] parameters = parameter.split(":", 3);
 		int dest = Integer.parseInt(parameters[0]);
@@ -223,7 +231,7 @@ public class Dispenser implements Runnable{
 	}
 	
 	public void processRecoverRespond (String parameter)	{
-		
+		if ( paxosInstance.isRecover )
 		System.out.println("process recover respond");
 		String[] parameters = parameter.split(":", 3);
 		int senderId = Integer.parseInt(parameters[0]);
@@ -234,7 +242,7 @@ public class Dispenser implements Runnable{
 	}
 	
 	public boolean isPostFinished ()	{
-		if (currentPost == null || server.currentPosition >= currentPost.position)
+		if (currentPost == null || server.currentPosition >= currentPost.position || currentPost.message == null)
 			return true;
 		return false;
 			

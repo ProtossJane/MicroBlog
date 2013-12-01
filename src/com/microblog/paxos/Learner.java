@@ -27,6 +27,9 @@ public class Learner {
 		if ( acceptedProposal.ballotNumber.positionId <= server.currentPosition)
 			return;
 		
+		if ( Accepter.promisedBal == null || acceptedProposal.ballotNumber.compareTo( Accepter.promisedBal) > 0)
+			 Accepter.promisedBal = acceptedProposal.ballotNumber;
+		
 		if ( !proposals.containsKey( acceptedProposal.ballotNumber) )	{
 			proposals.put( new BallotNumber(acceptedProposal.ballotNumber), 0);
 			System.out.println("accected new proposal " + proposals.get(acceptedProposal.ballotNumber));
@@ -54,14 +57,19 @@ public class Learner {
 	
 	public void receiveDecide ( Proposal decidedProposal)	{
 		
+		if ( Accepter.promisedBal == null || decidedProposal.ballotNumber.compareTo( Accepter.promisedBal) > 0)
+			 Accepter.promisedBal = decidedProposal.ballotNumber;
+		
 		if ( decidedProposal.ballotNumber.positionId == server.currentPosition + 1 )	{
 			server.GlobalLog.add(decidedProposal);
 			server.currentPosition += 1;
+			server.paxosInstance.maxPosition = Math.max(server.currentPosition, server.paxosInstance.maxPosition);
 			System.out.println("***********write proposal********** " + decidedProposal);
 		}
 		
 		else if ( decidedProposal.ballotNumber.positionId > server.currentPosition + 1 )	{
 			server.paxosInstance.addDecide( decidedProposal.ballotNumber.positionId, decidedProposal);
+			server.paxosInstance.isRecover = true;
 			if( decidedProposal.ballotNumber.positionId > server.paxosInstance.maxPosition )
 				server.paxosInstance.maxPosition = decidedProposal.ballotNumber.positionId;
 		}
