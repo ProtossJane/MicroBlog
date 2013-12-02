@@ -34,13 +34,13 @@ public class Proposer {
 		else
 			bal.proposalId += 1;
 		bal.positionId = paxosInstance.currentPosition + 1;
-		System.out.println("ID "+ FrontServer.serverId + " broadcast prepare:"+bal);
+		//System.out.println("ID "+ FrontServer.serverId + " broadcast prepare:"+bal);
 		sender.broadCast("prepare:" + bal );
 		//sender.send("prepare:" + bal, 1);
 	}
 	
 	public void receivePromise (BallotNumber bal, Proposal acceptedProposal, int senderId)	{
-		System.out.println("compare this bal: " + this.bal + " with receive bal: " + bal);
+		//System.out.println("compare this bal: " + this.bal + " with receive bal: " + bal);
 		
 		if ( !bal.equals(this.bal) || promiseReceived.contains(senderId) )	{
 			System.out.println("throw promise");
@@ -62,7 +62,7 @@ public class Proposer {
 			isPendding = false;
 		}
 		
-		System.out.println("# of promise:" + promiseReceived.size());
+		//System.out.println("# of promise:" + promiseReceived.size());
 	}
 	
 	public boolean isPendding ()	{

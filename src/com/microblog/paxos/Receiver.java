@@ -29,13 +29,13 @@ public class Receiver extends Server{
 				if( !server.isStop() )	{
 					if ( server.getRecoverStatus())	{
 						//System.out.println( "add to recover queue:" + msg );
-						System.out.println( "get msg from paxos:" + msg );
+						//System.out.println( "get msg from paxos:" + msg );
 						if ( msg.matches("recover_respond:.*") || msg.matches( "decide:.*") || msg.matches("recover:.*"))
 							server.addRecoverJob(msg);
 					}
 					
-					if ( !(msg.matches("recover_respond:.*") || msg.matches( "decide:.*") || msg.matches("recover:.*")) )
-					System.out.println( "get msg from paxos:" + msg );
+					//if ( !(msg.matches("recover_respond:.*") || msg.matches( "decide:.*") || msg.matches("recover:.*")) )
+					//System.out.println( "get msg from paxos:" + msg );
 					server.addJob(msg);
 					
 				}

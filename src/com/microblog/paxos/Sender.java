@@ -7,11 +7,11 @@ import com.microblog.client.Client;
 
 public class Sender {
 	protected HashMap<Integer, String> route;
-	protected HashMap<Integer,paxosClient> clientList;
+	//protected HashMap<Integer,paxosClient> clientList;
 	public Sender (HashMap<Integer, String> route)	{
 		
 		this.route = route;
-		clientList = new HashMap<Integer, paxosClient>();
+		//clientList = new HashMap<Integer, paxosClient>();
 		/*for (int i = 0 ; i < route.size(); ++i)	{
 			try {
 				clientList.add(new paxosClient(route.get(i+1), 9000 ) );

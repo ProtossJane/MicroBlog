@@ -22,7 +22,8 @@ public class PaxosWorker implements Runnable{
 	
 	@Override
 	public void run() {
-while ( true )	{
+		while ( true )	{
+			
 			
 			if ( server.isStop() )	{
 				respondPost (currentPost, "fail");
@@ -37,7 +38,7 @@ while ( true )	{
 							else
 								respondPost(currentPost , "success");
 						}
-					if (!server.isPostEmpty() )	{						
+					if (!paxosInstance.isPostEmpty() )	{						
 						currentPost = paxosInstance.popPost();
 						preparePost (currentPost);
 
@@ -97,14 +98,14 @@ while ( true )	{
 			
 			if ( !paxosInstance.postQueue.isEmpty() )	{
 				if (System.currentTimeMillis() - paxosInstance.postQueue.peek().timeStamp > 10000 )	{
-					//respondPost (paxosInstance.postQueue.peek(), "fail");
+					respondPost (paxosInstance.postQueue.peek(), "fail");
 					//System.out.println("************************************post " +  paxosInstance.postQueue.peek() + " Time out ");
 					//paxosInstance.postQueue.poll();
 				}
 			}
 			
 			if ( currentPost!=null && System.currentTimeMillis() - currentPost.timeStamp > 10000 )	{
-				//respondPost (currentPost, "fail");
+				respondPost (currentPost, "fail");
 				//System.out.println("************************************post " +  currentPost + " Time out ");
 				//currentPost = null;
 			}
@@ -115,7 +116,7 @@ while ( true )	{
 public void preparePost (Post post)	{
 		
 		post.position = paxosInstance.currentPosition + 1;
-		System.out.println("process post ..." + post);
+		//System.out.println("process post ..." + post);
 		paxosInstance.proposer.setProposal( new Message ( FrontServer.serverId, post.message));
 		paxosInstance.proposer.prepare();
 	}
@@ -132,7 +133,7 @@ public void preparePost (Post post)	{
 	}
 	
 	public void respondPrepare( String parameter )	{
-		System.out.println("respond prepare");
+		//System.out.println("respond prepare");
 		String[] parameters = parameter.split(":");
 		if (parameters.length == 3)	{
 			paxosInstance.accepter.receivePrepare( new BallotNumber( Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])));
@@ -142,7 +143,7 @@ public void preparePost (Post post)	{
 	
 	
 	public void respondPromise( String parameter)	{
-		System.out.println("respond promise");
+		//System.out.println("respond promise");
 		String[] parameters = parameter.split(":", 9);
 		if (parameters.length == 9)	{
 			BallotNumber bal = new BallotNumber (Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])) ;
@@ -161,7 +162,7 @@ public void preparePost (Post post)	{
 	
 	
 	public void respondAccept(String parameter)	{
-		System.out.println("respond accept request");
+		//System.out.println("respond accept request");
 		String[] parameters = parameter.split(":", 5);
 		if (parameters.length == 5)	{
 			BallotNumber bal = new BallotNumber (Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])) ;
@@ -174,7 +175,7 @@ public void preparePost (Post post)	{
 	
 	public void respondAccepted(String parameter)	{
 		
-		System.out.println("respond accepted");
+		//System.out.println("respond accepted");
 		String[] parameters = parameter.split(":", 5);
 		if (parameters.length == 5)	{
 			BallotNumber bal = new BallotNumber (Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])) ;
@@ -188,7 +189,7 @@ public void preparePost (Post post)	{
 	
 	public void respondDecide(String parameter)	{
 		
-		System.out.println("respond decide");
+		//System.out.println("respond decide");
 		String[] parameters = parameter.split(":", 5);
 		if (parameters.length == 5)	{
 			BallotNumber bal = new BallotNumber (Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])) ;

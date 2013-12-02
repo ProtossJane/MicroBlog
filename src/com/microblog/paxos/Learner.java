@@ -32,7 +32,7 @@ public class Learner {
 		
 		if ( !proposals.containsKey( acceptedProposal.ballotNumber) )	{
 			proposals.put( new BallotNumber(acceptedProposal.ballotNumber), 0);
-			System.out.println("accected new proposal " + proposals.get(acceptedProposal.ballotNumber));
+			//System.out.println("accected new proposal " + proposals.get(acceptedProposal.ballotNumber));
 		}
 		
 		int count = proposals.get(acceptedProposal.ballotNumber).intValue() + 1;
@@ -48,12 +48,12 @@ public class Learner {
 				paxosInstance.addDecide(acceptedProposal.ballotNumber.positionId, acceptedProposal);
 				return;
 			}
-			server.GlobalLog.add(acceptedProposal.ballotNumber.positionId, acceptedProposal);
+			server.GlobalLog.add(acceptedProposal);
 			paxosInstance.localLog.add(acceptedProposal);
 			paxosInstance.currentPosition = acceptedProposal.ballotNumber.positionId;
 			paxosInstance.maxPosition = acceptedProposal.ballotNumber.positionId;
 			System.out.println("***********write proposal********** " + acceptedProposal);
-			System.out.println("id "+server.serverId + " current position " + paxosInstance.currentPosition);
+			//System.out.println("id "+ paxosInstance.paxosId + " current position " + paxosInstance.currentPosition);
 		}
 	}
 	
@@ -68,7 +68,7 @@ public class Learner {
 			paxosInstance.currentPosition += 1;
 			paxosInstance.maxPosition = Math.max(paxosInstance.currentPosition, paxosInstance.maxPosition);
 			System.out.println("***********write proposal********** " + decidedProposal);
-			System.out.println("id "+server.serverId + " current position " + paxosInstance.currentPosition);
+			//System.out.println("id "+paxosInstance.paxosId + " current position " + paxosInstance.currentPosition);
 		}
 		
 		else if ( decidedProposal.ballotNumber.positionId > paxosInstance.currentPosition + 1 )	{
@@ -101,6 +101,7 @@ public class Learner {
 				paxosInstance.localLog.add(decidedProposal);
 				server.GlobalLog.add(decidedProposal);
 				paxosInstance.currentPosition += 1;
+				System.out.println("***********write proposal********** " + decidedProposal);
 				decidedProposal = paxosInstance.popDecide( paxosInstance.currentPosition + 1 );
 			}
 		

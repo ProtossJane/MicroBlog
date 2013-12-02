@@ -99,13 +99,13 @@ public class FrontServer extends Server{
 	
 	public void initPaxos(Sender sender) throws IOException	{
 		if (!isOptimized)	{
-			multiPaxos.add( new Paxos(sender) );
+			multiPaxos.add( new Paxos(sender, serverId) );
 			paxosInstance = multiPaxos.get(0);
 		}
 		else	{
 			for ( int i = 0; i< route.size(); ++i)
-				multiPaxos.add( new Paxos(sender) );
-			paxosInstance = multiPaxos.get(serverId);
+				multiPaxos.add( new Paxos(sender, i+1) );
+			paxosInstance = multiPaxos.get(serverId -1);
 		}
 		//paxosInstance.addPost(new Post("test", -1, null));
 	}
@@ -189,9 +189,9 @@ public class FrontServer extends Server{
 					//System.out.println("exec read...");
 					String blogs = ":";
 					
-					for (Proposal p : GlobalLog)	{
-						System.out.println( p );
-						blogs += p.message.message + ":"; 
+					for (int i = 0; i < GlobalLog.size(); ++i )	{
+						System.out.println( GlobalLog.get(i) );
+						blogs += GlobalLog.get(i).message.message + ":"; 
 					}
 					outputstream.println(blogs);
 				}
@@ -223,14 +223,15 @@ public class FrontServer extends Server{
 
 		serverId = Integer.valueOf( args[0] );
 		boolean option = false;
-		if (args.length == 2)
-			option = args[1] == "1" ;
+		if (args.length == 2)	{
+			option = args[1].equals("1")? true:false ;
+		}
 		try {
 			FrontServer server = FrontServer.getInstance();
 			Sender sender = new Sender (server.route);
 			server.isOptimized = option;
 			server.initPaxos(sender);
-			
+			System.out.println("optimized mode:"+option);
 			Receiver receiver = new Receiver (server.paxosInstance);
 			Dispenser dispenser = new Dispenser(server.paxosInstance, server.multiPaxos, sender);
 			for ( Paxos p : server.multiPaxos)

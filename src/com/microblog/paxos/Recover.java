@@ -24,7 +24,7 @@ public class Recover extends TimerTask {
 		for (Paxos paxos : multiPaxos)	
 			recoverInfo += ":" + paxos.currentPosition ;
 		
-		if (!server.isStop())
+		if (!server.isStop() && server.getRecoverStatus())
 			sender.broadCast( recoverInfo);
 		
 	}

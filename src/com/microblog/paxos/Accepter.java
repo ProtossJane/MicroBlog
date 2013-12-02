@@ -26,8 +26,8 @@ public class Accepter {
 		
 		if( promisedBal == null )	{
 			promisedBal = bal;		
-			sender.send("promise:" + bal + ":" + server.serverId + ":" + acceptedProposal, bal.senderId);
-			System.out.println("acceptor processing...promise bal: "+ bal +" accept proposal:" + acceptedProposal);
+			sender.send("promise:" + bal + ":" + FrontServer.serverId + ":" + acceptedProposal, bal.senderId);
+			//System.out.println("paxos#" + paxosInstance.paxosId + " acceptor promise bal: "+ bal +" accept proposal:" + acceptedProposal);
 		}
 		
 		else if ( bal.compareTo(promisedBal) == 0 || bal.compareTo(promisedBal) > 0 )	{
@@ -37,7 +37,7 @@ public class Accepter {
 				acceptedProposal = null;
 			
 			sender.send("promise:" + bal + ":" + server.serverId + ": "+ acceptedProposal, bal.senderId);
-			System.out.println("acceptor processing...promise bal: "+ bal +" accept proposal:" + acceptedProposal);
+			//System.out.println("paxos#" + paxosInstance.paxosId + "acceptor promise bal: "+ bal +" accept proposal:" + acceptedProposal);
 		}
 		
 		

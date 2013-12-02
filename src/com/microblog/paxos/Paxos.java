@@ -19,12 +19,13 @@ public class Paxos {
 	protected Learner learner;
 	protected volatile int	maxPosition = -1;
 	protected volatile int currentPosition = -1;
+	protected int paxosId;
 	//protected volatile boolean isRecover = true;
 	protected volatile HashMap< Integer,Proposal > decideBuffer;
 	protected ArrayList<Proposal> localLog = new ArrayList<Proposal> ();
 	
 	
-	public Paxos ( Sender sender) throws IOException	{
+	public Paxos ( Sender sender, int paxosId) throws IOException	{
 		this.sender 		= sender;
 		jobQueue 	= new LinkedList<String>();
 		postQueue 	= new LinkedList<Post>();
@@ -34,6 +35,7 @@ public class Paxos {
 		learner 	= new Learner (sender, this);
 		decideBuffer = new HashMap <Integer, Proposal> ();
 		paxosWorker = new PaxosWorker(this);
+		this.paxosId = paxosId;
 	}
 	
 	public PaxosWorker getWorker()	{
