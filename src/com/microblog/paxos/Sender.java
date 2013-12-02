@@ -1,8 +1,6 @@
 package com.microblog.paxos;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.microblog.client.Client;

@@ -13,11 +13,13 @@ public class Proposer {
 	protected Message message				   = null;
 	protected HashSet<Integer> promiseReceived = new HashSet<Integer>();
 	protected FrontServer server 			   = FrontServer.getInstance();
+	protected Paxos paxosInstance;
 	protected BallotNumber acceptedBal 		   = null;
 	protected BallotNumber bal				   = new BallotNumber(0, FrontServer.serverId, 0);
 	
-	public Proposer (Sender sender) throws IOException	{
+	public Proposer (Sender sender, Paxos paxosInstance) throws IOException	{
 		this.sender = sender;
+		this.paxosInstance = paxosInstance;
 	}
 	
 	public void setProposal (Message message)	{
@@ -27,11 +29,11 @@ public class Proposer {
 	public void prepare()	{
 		isPendding = true;
 		promiseReceived.clear();
-		if (Accepter.promisedBal!=null)
-			bal.proposalId = Accepter.promisedBal.proposalId + 1;
+		if (paxosInstance.accepter.promisedBal!=null)
+			bal.proposalId = paxosInstance.accepter.promisedBal.proposalId + 1;
 		else
 			bal.proposalId += 1;
-		bal.positionId = server.currentPosition + 1;
+		bal.positionId = paxosInstance.currentPosition + 1;
 		System.out.println("ID "+ FrontServer.serverId + " broadcast prepare:"+bal);
 		sender.broadCast("prepare:" + bal );
 		//sender.send("prepare:" + bal, 1);
@@ -54,9 +56,10 @@ public class Proposer {
 		
 		if (promiseReceived.size() == FrontServer.quorumSize)	{
 			System.out.println("reach majority for " + bal);
-			isPendding = false;
-			if ( message.message != null)
+			
+			if ( message.message != null && isPendding == true)
 				sender.broadCast("accept:" + bal + ":" + message);
+			isPendding = false;
 		}
 		
 		System.out.println("# of promise:" + promiseReceived.size());

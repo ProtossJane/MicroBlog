@@ -2,8 +2,8 @@ package com.microblog.paxos;
 
 public class Message {
 	
-	String message;
-	int senderId;
+	public String message;
+	public int senderId;
 	
 	public Message (int senderId, String message )	{
 		

@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.HashMap;
 
 import com.microblog.server.FrontServer;
 import com.microblog.server.Server;
@@ -12,7 +11,7 @@ import com.microblog.server.Server;
 public class Receiver extends Server{
 	
 	protected Paxos paxosInstance;
-	
+	protected FrontServer server = FrontServer.getInstance();
 	public Receiver (Paxos paxosInstance) throws IOException	{
 		
 		super( FrontServer.localAddr , 9000 );	//Paxos messenger listen to 127.0.0.1:9000 
@@ -27,17 +26,17 @@ public class Receiver extends Server{
 				BufferedReader inputstream = new BufferedReader( new InputStreamReader( client.getInputStream()));
 				String msg = inputstream.readLine();
 				
-				if( !FrontServer.getInstance().isStop() )	{
-					if ( paxosInstance.getRecoverStatus())	{
+				if( !server.isStop() )	{
+					if ( server.getRecoverStatus())	{
 						//System.out.println( "add to recover queue:" + msg );
 						System.out.println( "get msg from paxos:" + msg );
 						if ( msg.matches("recover_respond:.*") || msg.matches( "decide:.*") || msg.matches("recover:.*"))
-							paxosInstance.addRecoverJob(msg);
+							server.addRecoverJob(msg);
 					}
 					
 					if ( !(msg.matches("recover_respond:.*") || msg.matches( "decide:.*") || msg.matches("recover:.*")) )
 					System.out.println( "get msg from paxos:" + msg );
-					paxosInstance.addJob(msg);
+					server.addJob(msg);
 					
 				}
 				

@@ -7,19 +7,20 @@ import com.microblog.server.FrontServer;
 public class Accepter {
 	
 	protected Sender sender;
-	protected static BallotNumber promisedBal  = null;
+	protected  BallotNumber promisedBal  = null;
 	protected Proposal acceptedProposal = null;
 	protected FrontServer server 		= FrontServer.getInstance();
+	protected Paxos paxosInstance;
 	
-	public Accepter (Sender sender)	throws IOException {
+	public Accepter (Sender sender, Paxos paxosInstance)	throws IOException {
 		
 		this.sender = sender;
-		
+		this.paxosInstance = paxosInstance;
 	}
 	
 	public void receivePrepare( BallotNumber bal )	{
 		
-		if (bal.positionId <= server.paxosInstance.maxPosition)
+		if (bal.positionId <= paxosInstance.maxPosition)
 			return; //or signal the sender for recovering
 		
 		

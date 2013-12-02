@@ -1,48 +1,46 @@
 package com.microblog.paxos;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Timer;
-
-import com.microblog.server.Post;
 
 public class Paxos {
 	
 	protected Sender sender;
-	protected volatile LinkedList<String> jobQueue;
-	protected volatile LinkedList<Post>	 postQueue;
-	protected volatile LinkedList<String> recoverQueue;
+	//protected volatile LinkedList<String> jobQueue;
+	//protected volatile LinkedList<Post>	 postQueue;
+	//protected volatile LinkedList<String> recoverQueue;
 	protected Proposer proposer;
 	protected Accepter accepter;
 	protected Learner learner;
-	protected int	maxPosition = -1;
-	protected volatile boolean isRecover = true;
+	protected volatile int	maxPosition = -1;
+	protected volatile int currentPosition = -1;
+	//protected volatile boolean isRecover = true;
 	protected volatile HashMap< Integer,Proposal > decideBuffer;
-	protected Timer	recoverTimer;
+	protected ArrayList<Proposal> localLog = new ArrayList<Proposal> ();
 	
-	public Paxos (HashMap<Integer, String> route) throws IOException	{
-		sender 		= new Sender(route);
-		jobQueue 	= new LinkedList<String>();
-		postQueue 	= new LinkedList<Post>();
-		recoverQueue = new LinkedList<String>();
-		proposer 	= new Proposer (sender);
-		accepter 	= new Accepter (sender);
-		learner 	= new Learner (sender);
+	
+	public Paxos ( Sender sender) throws IOException	{
+		this.sender 		= sender;
+		//jobQueue 	= new LinkedList<String>();
+		//postQueue 	= new LinkedList<Post>();
+		//recoverQueue = new LinkedList<String>();
+		proposer 	= new Proposer (sender, this);
+		accepter 	= new Accepter (sender, this);
+		learner 	= new Learner (sender, this);
 		decideBuffer = new HashMap <Integer, Proposal> ();
-		recoverTimer = new Timer();
-		recoverTimer.scheduleAtFixedRate(new Recover( sender), 2000, 10000);
+		
 	}
 	
-	public synchronized void setRecoverStatus ()	{
+	/*public synchronized void setRecoverStatus ()	{
 		isRecover = true;
 	}
 	
 	public synchronized boolean getRecoverStatus () {
 		return isRecover;
 	}
-	
-	public synchronized void addPost (Post post)	{
+	*/
+	/*public synchronized void addPost (Post post)	{
 		postQueue.add(post);
 	}
 	
@@ -64,7 +62,7 @@ public class Paxos {
 	
 	public synchronized boolean isJobEmpty()	{
 		return jobQueue.isEmpty();
-	}
+	}*/
 	
 	public synchronized void addDecide( Integer position, Proposal decidedProposal )	{
 		decideBuffer.put(position, decidedProposal);
@@ -74,11 +72,20 @@ public class Paxos {
 		return decideBuffer.get(position);
 	}
 	
-	public synchronized void addRecoverJob (String recoverMsg)	{
+	/*public synchronized void addRecoverJob (String recoverMsg)	{
 		recoverQueue.add(recoverMsg);
 	}
 	
 	public synchronized String popRecoverJob ()	{
 		return recoverQueue.poll();
+	}*/
+	
+	public void setMaxPosition (int position)	{
+		if( position > maxPosition)
+			maxPosition = position;
+	}
+	
+	public boolean noGap ()	{
+		return currentPosition == maxPosition;
 	}
 }
