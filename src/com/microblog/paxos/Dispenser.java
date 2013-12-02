@@ -11,7 +11,7 @@ import com.microblog.server.Post;
 
 public class Dispenser implements Runnable{
 
-	protected Post currentPost;
+	//protected Post currentPost;
 	protected FrontServer server = FrontServer.getInstance();
 	protected Paxos paxosInstance;
 	protected ArrayList<Paxos> multiPaxos;
@@ -30,13 +30,13 @@ public class Dispenser implements Runnable{
 		
 		while ( true )	{
 			
-			if ( server.isStop() )	{
+			/*if ( server.isStop() )	{
 				respondPost (currentPost, "fail");
 				currentPost = null;
-			}
+			}*/
 			
 			if(!server.getRecoverStatus() && !server.isStop())	{
-				if ( isPostFinished() )	{
+				/*if ( isPostFinished() )	{
 						if (currentPost != null)	{
 							if( currentPost.message != null && paxosInstance.localLog.get(currentPost.position).message.senderId != FrontServer.serverId)
 								respondPost(currentPost , "fail");
@@ -48,7 +48,7 @@ public class Dispenser implements Runnable{
 						preparePost (currentPost);
 
 					}
-				}
+				}*/
 				
 				
 				if ( !server.isJobEmpty() )	{
@@ -58,19 +58,19 @@ public class Dispenser implements Runnable{
 					if ( types.length == 2)
 						switch ( types[0] )	{
 							case "prepare":
-								respondPrepare( types[1] );
+								respondPrepare( currentJob );
 								break;
 							case "promise":
-								respondPromise( types[1] );
+								respondPromise( currentJob );
 								break;
 							case "accept":
-								respondAccept( types[1] );
+								respondAccept( currentJob );
 								break;
 							case "accepted":
-								respondAccepted( types[1] );
+								respondAccepted( currentJob );
 								break;
 							case "decide":
-								respondDecide( types[1] );
+								respondDecide( currentJob );
 								break;
 							case "recover":
 								respondRecover( types[1] );
@@ -99,7 +99,7 @@ public class Dispenser implements Runnable{
 								processRecoverRespond( types[1] );
 								break;
 							case "decide" :
-								respondDecide( types[1] );
+								respondDecide( recoverJob );
 								break;
 							default:
 								break;
@@ -113,38 +113,38 @@ public class Dispenser implements Runnable{
 					server.setRecoverStatus(false);
 					recoverReady = false;
 					recoverRespond.clear();
-					server.postQueue.addFirst(new Post (null, paxosInstance.currentPosition + 1, null, System.currentTimeMillis()));
+					paxosInstance.postQueue.addFirst(new Post (null, paxosInstance.currentPosition + 1, null, System.currentTimeMillis()));
 					
 				}
 			}
 			
-			if ( !server.postQueue.isEmpty() )	{
+			/*if ( !server.postQueue.isEmpty() )	{
 				if (System.currentTimeMillis() - server.postQueue.peek().timeStamp > 10000 )	{
 					//respondPost (paxosInstance.postQueue.peek(), "fail");
 					//System.out.println("************************************post " +  paxosInstance.postQueue.peek() + " Time out ");
 					//paxosInstance.postQueue.poll();
 				}
-			}
+			}*/
 			
-			if ( currentPost!=null && System.currentTimeMillis() - currentPost.timeStamp > 10000 )	{
+			/*if ( currentPost!=null && System.currentTimeMillis() - currentPost.timeStamp > 10000 )	{
 				//respondPost (currentPost, "fail");
 				//System.out.println("************************************post " +  currentPost + " Time out ");
 				//currentPost = null;
-			}
+			}*/
 		}
 		
 	}
 	
 	
-	public void preparePost (Post post)	{
+	/*public void preparePost (Post post)	{
 		
 		post.position = paxosInstance.currentPosition + 1;
 		System.out.println("process post ..." + post);
 		paxosInstance.proposer.setProposal( new Message ( FrontServer.serverId, post.message));
 		paxosInstance.proposer.prepare();
-	}
+	}*/
 	
-	public void respondPost (Post currentPost, String status)	{
+	/*public void respondPost (Post currentPost, String status)	{
 		
 		if ( currentPost!=null && currentPost.socket!= null )
 			try {
@@ -153,20 +153,24 @@ public class Dispenser implements Runnable{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-	}
+	}*/
 	
-	public void respondPrepare( String parameter )	{
-		System.out.println("respond prepare");
-		String[] parameters = parameter.split(":");
-		if (parameters.length == 3)	{
-			paxosInstance.accepter.receivePrepare( new BallotNumber( Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])));
+	public void respondPrepare( String currentJob )	{//fix this
+		//System.out.println("respond prepare");
+		String[] parameters = currentJob.split(":");
+		int paxosId = FrontServer.serverId;
+		if (parameters.length == 4)	
+			paxosId = Integer.parseInt(parameters[2]);
+			//paxosInstance.accepter.receivePrepare( new BallotNumber( Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])));
 			
-		}
+		Paxos paxos = getPaxosInstance(paxosId);
+		paxos.addJob(currentJob);
+		
 	}
 	
 	
-	public void respondPromise( String parameter)	{
-		System.out.println("respond promise");
+	public void respondPromise( String currentJob)	{
+		/*System.out.println("respond promise");
 		String[] parameters = parameter.split(":", 9);
 		if (parameters.length == 9)	{
 			BallotNumber bal = new BallotNumber (Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])) ;
@@ -180,45 +184,54 @@ public class Dispenser implements Runnable{
 			BallotNumber bal = new BallotNumber (Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])) ;
 			int senderId = Integer.parseInt(parameters[3]);
 			paxosInstance.proposer.receivePromise(bal, null, senderId );
-		}
+		}*/
+		
+		paxosInstance.addJob(currentJob);
 	}
 	
 	
-	public void respondAccept(String parameter)	{
+	public void respondAccept(String currentJob)	{
 		System.out.println("respond accept request");
-		String[] parameters = parameter.split(":", 5);
-		if (parameters.length == 5)	{
-			BallotNumber bal = new BallotNumber (Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])) ;
-			Message message = new Message (Integer.parseInt(parameters[3]), parameters[4]);
-			Paxos paxos = getPaxosInstance (bal.senderId);
-			paxos.accepter.receiveAcceptRequest(new Proposal(bal, message));
+		String[] parameters = currentJob.split(":", 6);
+		if (parameters.length == 6)	{
+			//BallotNumber bal = new BallotNumber (Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])) ;
+			//Message message = new Message (Integer.parseInt(parameters[3]), parameters[4]);
+			Paxos paxos = getPaxosInstance (Integer.parseInt(parameters[2]));
+			paxos.addJob(currentJob);
+			//paxos.accepter.receiveAcceptRequest(new Proposal(bal, message));
 		}
 		
 	}
 	
-	public void respondAccepted(String parameter)	{
+	public void respondAccepted(String currentJob)	{
 		
 		System.out.println("respond accepted");
-		String[] parameters = parameter.split(":", 5);
-		if (parameters.length == 5)	{
-			BallotNumber bal = new BallotNumber (Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])) ;
-			Message message = new Message (Integer.parseInt(parameters[3]), parameters[4]);
-			Paxos paxos = getPaxosInstance (bal.senderId);
-			paxos.learner.receiveAccepted(new Proposal(bal, message));
+		String[] parameters = currentJob.split(":", 6);
+		if (parameters.length == 6)	{
+			//BallotNumber bal = new BallotNumber (Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])) ;
+			//Message message = new Message (Integer.parseInt(parameters[3]), parameters[4]);
+			//Paxos paxos = getPaxosInstance (bal.senderId);
+			//paxos.learner.receiveAccepted(new Proposal(bal, message));
+			Paxos paxos = getPaxosInstance (Integer.parseInt(parameters[2]));
+			paxos.addJob(currentJob);
 		}
 		
 	}
 	
 	
-	public void respondDecide(String parameter)	{
+	public void respondDecide(String currentJob)	{
 		
 		System.out.println("respond decide");
-		String[] parameters = parameter.split(":", 5);
-		if (parameters.length == 5)	{
-			BallotNumber bal = new BallotNumber (Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])) ;
-			Message message = new Message (Integer.parseInt(parameters[3]), parameters[4]);
-			Paxos paxos = getPaxosInstance (bal.senderId);
-			paxos.learner.receiveDecide(new Proposal(bal, message));
+		String[] parameters = currentJob.split(":", 6);
+		if (parameters.length == 6)	{
+			//BallotNumber bal = new BallotNumber (Integer.parseInt(parameters[0]), Integer.parseInt(parameters[1]), Integer.parseInt(parameters[2])) ;
+			//Message message = new Message (Integer.parseInt(parameters[3]), parameters[4]);
+			//Paxos paxos = getPaxosInstance (bal.senderId);
+			//paxos.learner.receiveDecide(new Proposal(bal, message));
+			Paxos paxos = getPaxosInstance (Integer.parseInt(parameters[2]));
+			paxos.addJob(currentJob);
+			if (server.getRecoverStatus())
+				paxos.addRecoverJob(currentJob);
 		}
 		
 	}
@@ -286,11 +299,11 @@ public class Dispenser implements Runnable{
 		return isFinished;
 	}
 	
-	public boolean isPostFinished ()	{
+	/*public boolean isPostFinished ()	{
 		if (currentPost == null || paxosInstance.currentPosition >= currentPost.position || currentPost.message == null)
 			return true;
 		return false;
 			
-	}
+	}*/
 	
 }

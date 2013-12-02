@@ -3,13 +3,17 @@ package com.microblog.paxos;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+
+import com.microblog.server.Post;
 
 public class Paxos {
 	
 	protected Sender sender;
-	//protected volatile LinkedList<String> jobQueue;
-	//protected volatile LinkedList<Post>	 postQueue;
-	//protected volatile LinkedList<String> recoverQueue;
+	protected PaxosWorker paxosWorker;
+	protected volatile LinkedList<String> jobQueue;
+	protected volatile LinkedList<Post>	 postQueue;
+	protected volatile LinkedList<String> recoverQueue;
 	protected Proposer proposer;
 	protected Accepter accepter;
 	protected Learner learner;
@@ -22,14 +26,18 @@ public class Paxos {
 	
 	public Paxos ( Sender sender) throws IOException	{
 		this.sender 		= sender;
-		//jobQueue 	= new LinkedList<String>();
-		//postQueue 	= new LinkedList<Post>();
-		//recoverQueue = new LinkedList<String>();
+		jobQueue 	= new LinkedList<String>();
+		postQueue 	= new LinkedList<Post>();
+		recoverQueue = new LinkedList<String>();
 		proposer 	= new Proposer (sender, this);
 		accepter 	= new Accepter (sender, this);
 		learner 	= new Learner (sender, this);
 		decideBuffer = new HashMap <Integer, Proposal> ();
-		
+		paxosWorker = new PaxosWorker(this);
+	}
+	
+	public PaxosWorker getWorker()	{
+		return paxosWorker;
 	}
 	
 	/*public synchronized void setRecoverStatus ()	{
@@ -38,9 +46,9 @@ public class Paxos {
 	
 	public synchronized boolean getRecoverStatus () {
 		return isRecover;
-	}
-	*/
-	/*public synchronized void addPost (Post post)	{
+	}*/
+	
+	public synchronized void addPost (Post post)	{
 		postQueue.add(post);
 	}
 	
@@ -62,7 +70,7 @@ public class Paxos {
 	
 	public synchronized boolean isJobEmpty()	{
 		return jobQueue.isEmpty();
-	}*/
+	}
 	
 	public synchronized void addDecide( Integer position, Proposal decidedProposal )	{
 		decideBuffer.put(position, decidedProposal);
@@ -72,13 +80,13 @@ public class Paxos {
 		return decideBuffer.get(position);
 	}
 	
-	/*public synchronized void addRecoverJob (String recoverMsg)	{
+	public synchronized void addRecoverJob (String recoverMsg)	{
 		recoverQueue.add(recoverMsg);
 	}
 	
 	public synchronized String popRecoverJob ()	{
 		return recoverQueue.poll();
-	}*/
+	}
 	
 	public void setMaxPosition (int position)	{
 		if( position > maxPosition)

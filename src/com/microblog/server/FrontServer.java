@@ -181,7 +181,7 @@ public class FrontServer extends Server{
 				if (msg.matches("POST:.*"))	{
 					msg = msg.replaceFirst("POST:", "");
 					Post post = new Post (msg, -1, client, System.currentTimeMillis());
-					addPost(post);
+					paxosInstance.addPost(post);
 					
 				}
 				
@@ -233,6 +233,8 @@ public class FrontServer extends Server{
 			
 			Receiver receiver = new Receiver (server.paxosInstance);
 			Dispenser dispenser = new Dispenser(server.paxosInstance, server.multiPaxos, sender);
+			for ( Paxos p : server.multiPaxos)
+				new Thread(p.getWorker()).start();
 			new Thread(receiver).start();
 			new Thread(dispenser).start();
 			new Thread(server).start();
