@@ -59,5 +59,14 @@
         </java>
     </target>
 
-   
+
+     <target name="ExportJar" depends="build">
+		<jar destfile="Server.jar">
+		<manifest>
+		    <attribute name="Main-Class" value="com.microblog.server.FrontServer"/>
+		    <attribute name="Class-Path" value="MicroBlog.classpath"/>
+		</manifest>
+		<fileset dir="bin"/>
+	    </jar>
+	</target>   
 </project>
