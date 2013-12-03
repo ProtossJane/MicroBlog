@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.Inet4Address;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ public class FrontServer extends Server{
 	
 	private FrontServer () throws IOException	{
 		super();
+		localAddr = Inet4Address.getLocalHost().getHostAddress();
 		isStop = false;
 		route = new HashMap<Integer, String>();
 		setRoutingTable();
@@ -52,6 +54,7 @@ public class FrontServer extends Server{
 	
 	private FrontServer (String host, int port) throws IOException	{
 		super(host, port);
+		localAddr = Inet4Address.getLocalHost().getHostAddress();
 		isStop = false;
 		route = new HashMap<Integer, String>();
 		setRoutingTable();
@@ -85,8 +88,7 @@ public class FrontServer extends Server{
 				while ( (s = reader.readLine()) !=null)	{
 					String[] par = s.split(":");
 					route.put(Integer.valueOf(par[0]), par[1]);
-					if (Integer.valueOf(par[0]).intValue() == serverId)
-						localAddr = par[1];
+					
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
