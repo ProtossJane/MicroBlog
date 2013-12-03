@@ -36,7 +36,7 @@ public class Accepter {
 			if ( acceptedProposal!=null && bal.positionId > acceptedProposal.ballotNumber.positionId)	
 				acceptedProposal = null;
 			
-			sender.send("promise:" + bal + ":" + server.serverId + ": "+ acceptedProposal, bal.senderId);
+			sender.send("promise:" + bal + ":" + server.serverId + ":"+ acceptedProposal, bal.senderId);
 			//System.out.println("paxos#" + paxosInstance.paxosId + "acceptor promise bal: "+ bal +" accept proposal:" + acceptedProposal);
 		}
 		
