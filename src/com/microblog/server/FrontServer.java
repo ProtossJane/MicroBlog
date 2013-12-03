@@ -285,11 +285,12 @@ public class FrontServer extends Server{
 		
 		else if( command.matches("\\s*read\\s*"))	{
 			//todo
-			String blogs = ":";
+			String blogs = "";
 			for (Proposal p : server.GlobalLog)	{
-				blogs += p.message.message + ":"; 
+				System.out.println(p.message.message);
+				//blogs += p.message.message + ":"; 
 			}
-			System.out.println( blogs );
+			//System.out.println( blogs );
 		}
 		
 		else if (command.matches("exit"))	{

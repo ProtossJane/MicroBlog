@@ -60,7 +60,7 @@
     </target>
 
 
-     <target name="ExportJar" depends="build">
+     <target name="jar" depends="build">
 		<jar destfile="Server.jar">
 		<manifest>
 		    <attribute name="Main-Class" value="com.microblog.server.FrontServer"/>
