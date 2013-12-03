@@ -189,7 +189,7 @@ public class FrontServer extends Server{
 				
 				else if (msg.matches("READ"))	{
 					//System.out.println("exec read...");
-					String blogs = ":";
+					String blogs = "";
 					
 					for (int i = 0; i < GlobalLog.size(); ++i )	{
 						System.out.println( GlobalLog.get(i) );
