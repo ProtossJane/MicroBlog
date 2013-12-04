@@ -89,7 +89,7 @@ public class Dispenser implements Runnable{
 				
 				if ( recoverReady && isRecoverFinished ())	{
 					
-					System.out.println("***Recover Done****\n");
+					System.out.println("***Recover Done****");
 					server.setRecoverStatus(false);
 					recoverReady = false;
 					recoverRespond.clear();
