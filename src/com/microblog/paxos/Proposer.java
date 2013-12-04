@@ -43,7 +43,7 @@ public class Proposer {
 		//System.out.println("compare this bal: " + this.bal + " with receive bal: " + bal);
 		
 		if ( !bal.equals(this.bal) || promiseReceived.contains(senderId) )	{
-			//System.out.println("throw promise " + bal);
+			System.out.println("throw promise " + bal);
 			return;
 		}
 		
@@ -55,7 +55,7 @@ public class Proposer {
 			}
 		
 		if (promiseReceived.size() == FrontServer.quorumSize)	{
-			//System.out.println("reach majority for " + bal);
+			System.out.println("reach majority for " + bal);
 			
 			if ( message.message != null && isPendding == true)
 				sender.broadCast("accept:" + bal + ":" + message);

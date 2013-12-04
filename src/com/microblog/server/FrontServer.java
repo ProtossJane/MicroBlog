@@ -183,7 +183,7 @@ public class FrontServer extends Server{
 			BufferedReader inputstream = new BufferedReader( new InputStreamReader( client.getInputStream()));
 			PrintWriter outputstream = new PrintWriter (client.getOutputStream(), true);
 			String msg = inputstream.readLine();
-			//System.out.println( "get msg from client:" + msg );
+			System.out.println( "get msg from client:" + msg );
 			if (msg == null) return;
 			if (msg.matches("\\s*fail\\s*"))	{
 				fail();
@@ -207,7 +207,7 @@ public class FrontServer extends Server{
 					String blogs = "";
 					
 					for (int i = 0; i < GlobalLog.size(); ++i )	{
-						//System.out.println( GlobalLog.get(i) );
+						System.out.println( GlobalLog.get(i) );
 						blogs += GlobalLog.get(i).message.message + ":"; 
 					}
 					outputstream.println(blogs);
@@ -223,6 +223,7 @@ public class FrontServer extends Server{
 			}
 			
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
