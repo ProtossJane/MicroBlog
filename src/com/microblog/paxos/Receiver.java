@@ -14,7 +14,7 @@ public class Receiver extends Server{
 	protected FrontServer server = FrontServer.getInstance();
 	public Receiver (Paxos paxosInstance) throws IOException	{
 		
-		super( FrontServer.localAddr , 9000 );	//Paxos messenger listen to 127.0.0.1:9000 
+		super( FrontServer.localAddr , FrontServer.port+1000 );	//Paxos messenger listen to 127.0.0.1:9000 
 		this.paxosInstance = paxosInstance;
 		
 	}

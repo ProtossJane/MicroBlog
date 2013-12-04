@@ -22,12 +22,13 @@ public class FrontServer extends Server{
 	
 	public Paxos paxosInstance;
 	public ArrayList<Paxos> multiPaxos;
-	public boolean isOptimized = false;
+	public static boolean isOptimized = false;
 	private boolean isStop;
 	private volatile boolean isRecover = true;
 	private static FrontServer server ;
 	public static int serverId = 0;
 	public static String localAddr = null;
+	public static int port = 8000;
 	public static int quorumSize = 3;
 	//public int currentPosition = -1;
 	public HashMap<Integer, String> route;
@@ -45,7 +46,7 @@ public class FrontServer extends Server{
 		isStop = false;
 		route = new HashMap<Integer, String>();
 		setRoutingTable();
-		super.bind(localAddr, 8000);
+		super.bind(localAddr, port);
 		multiPaxos = new ArrayList<Paxos>();
 		jobQueue 	= new LinkedList<String>();
 		postQueue 	= new LinkedList<Post>();
@@ -178,6 +179,14 @@ public class FrontServer extends Server{
 			PrintWriter outputstream = new PrintWriter (client.getOutputStream(), true);
 			String msg = inputstream.readLine();
 			System.out.println( "get msg from client:" + msg );
+			if (msg.matches("\\s*fail\\s*"))	{
+				fail();
+			}
+			
+			if (msg.matches("\\s*unfail\\s*"))	{
+				unfail();
+			}
+			
 			if( !isStop )	{
 				
 				if (msg.matches("POST:.*"))	{
@@ -227,11 +236,14 @@ public class FrontServer extends Server{
 		boolean option = false;
 		if (args.length == 2)	{
 			option = args[1].equals("1")? true:false ;
+			FrontServer.isOptimized = option;
+			if (option)
+				port = 8001;
 		}
 		try {
 			FrontServer server = FrontServer.getInstance();
 			Sender sender = new Sender (server.route);
-			server.isOptimized = option;
+			//server.isOptimized = option;
 			server.initPaxos(sender);
 			System.out.println("optimized mode:"+option);
 			Receiver receiver = new Receiver (server.paxosInstance);
@@ -271,21 +283,29 @@ public class FrontServer extends Server{
 	
 	public static void parser (String command, FrontServer server)	{
 		
-		if ( command.matches("\\s*fail\\s*") )	{
+		if ( command.matches("\\s*fail\\s*") || command.matches("\\s*fail\\s*(.*)") )	{
 			server.fail();
 		}
 		
-		else if( command.matches("\\s*unfail\\s*"))	{
+		else if( command.matches("\\s*unfail\\s*") || command.matches("\\s*unfail\\s*(.*)"))	{
 			server.unfail();
 		}
 		
-		else if ( command.matches("\\s*post\\s*(.*)") )	{
-			//todo
+		else if ( command.matches("\\s*post\\s*(.*)") || command.matches("\\s*post\\s*"))	{
+			if (command.matches("\\s*post\\s*(.*)")	)	{
+				command = command.replaceFirst("\\s*post\\s*(", "");
+				command = command.substring(0, command.lastIndexOf(")"));
+			}
+			else	{
+				command = command.replaceFirst("\\s*post\\s*", "");
+			}
+			server.paxosInstance.addPost(new Post (command, -1, null, System.currentTimeMillis()));
+			
 		}
 		
-		else if( command.matches("\\s*read\\s*"))	{
+		else if( command.matches("\\s*read\\s*") || command.matches("\\s*read\\s*(.*)"))	{
 			//todo
-			String blogs = "";
+			//String blogs = "";
 			for (Proposal p : server.GlobalLog)	{
 				System.out.println(p.message.message);
 				//blogs += p.message.message + ":"; 

@@ -97,17 +97,17 @@ public class PaxosWorker implements Runnable{
 			}
 			
 			if ( !paxosInstance.postQueue.isEmpty() )	{
-				if (System.currentTimeMillis() - paxosInstance.postQueue.peek().timeStamp > 10000 )	{
+				if (System.currentTimeMillis() - paxosInstance.postQueue.peek().timeStamp > 30000 )	{
 					respondPost (paxosInstance.postQueue.peek(), "fail");
 					//System.out.println("************************************post " +  paxosInstance.postQueue.peek() + " Time out ");
-					//paxosInstance.postQueue.poll();
+					paxosInstance.postQueue.poll();
 				}
 			}
 			
-			if ( currentPost!=null && System.currentTimeMillis() - currentPost.timeStamp > 10000 )	{
+			if ( currentPost!=null && System.currentTimeMillis() - currentPost.timeStamp > 30000 )	{
 				respondPost (currentPost, "fail");
 				//System.out.println("************************************post " +  currentPost + " Time out ");
-				//currentPost = null;
+				currentPost = null;
 			}
 		}
 		
