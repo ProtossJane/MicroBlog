@@ -297,8 +297,8 @@ public class FrontServer extends Server{
 			server.unfail();
 		}
 		
-		else if ( command.matches("\\s*post\\s*(.*)") || command.matches("\\s*post\\s*.*"))	{
-			if (command.matches("\\s*post\\s*(.*)")	)	{
+		else if ( command.matches("\\s*post\\s*\\(.*\\)") || command.matches("\\s*post\\s*.*"))	{
+			if (command.matches("\\s*post\\s*\\(.*\\)")	)	{
 				command = command.replaceFirst("\\s*post\\s*\\(", "");
 				command = command.substring(0, command.lastIndexOf(")"));
 			}
