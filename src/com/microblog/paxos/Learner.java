@@ -52,7 +52,7 @@ public class Learner {
 			paxosInstance.localLog.add(acceptedProposal);
 			paxosInstance.currentPosition = acceptedProposal.ballotNumber.positionId;
 			paxosInstance.maxPosition = acceptedProposal.ballotNumber.positionId;
-			System.out.println("***********write proposal********** \n" + acceptedProposal);
+			System.out.println("***********write proposal********** \n" + acceptedProposal+"\n\n");
 			//System.out.println("id "+ paxosInstance.paxosId + " current position " + paxosInstance.currentPosition);
 		}
 	}
@@ -67,7 +67,7 @@ public class Learner {
 			paxosInstance.localLog.add(decidedProposal);
 			paxosInstance.currentPosition += 1;
 			paxosInstance.maxPosition = Math.max(paxosInstance.currentPosition, paxosInstance.maxPosition);
-			System.out.println("***********write proposal********** \n" + decidedProposal);
+			System.out.println("***********write proposal********** \n" + decidedProposal+"\n\n");
 			//System.out.println("id "+paxosInstance.paxosId + " current position " + paxosInstance.currentPosition);
 		}
 		
@@ -101,7 +101,7 @@ public class Learner {
 				paxosInstance.localLog.add(decidedProposal);
 				server.GlobalLog.add(decidedProposal);
 				paxosInstance.currentPosition += 1;
-				System.out.println("***********write proposal********** \n" + decidedProposal);
+				System.out.println("***********write proposal********** \n" + decidedProposal+"\n\n");
 				decidedProposal = paxosInstance.popDecide( paxosInstance.currentPosition + 1 );
 			}
 		
