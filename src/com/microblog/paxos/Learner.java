@@ -53,7 +53,11 @@ public class Learner {
 			paxosInstance.currentPosition = acceptedProposal.ballotNumber.positionId;
 			paxosInstance.maxPosition = acceptedProposal.ballotNumber.positionId;
 <<<<<<< HEAD
+<<<<<<< HEAD
 			System.out.println("***********write proposal********** \n" + acceptedProposal+"\n\n");
+=======
+			//System.out.println("***********write proposal********** " + acceptedProposal);
+>>>>>>> parent of 2135ebe... Revert "clean output"
 =======
 			//System.out.println("***********write proposal********** " + acceptedProposal);
 >>>>>>> parent of 2135ebe... Revert "clean output"
@@ -72,7 +76,11 @@ public class Learner {
 			paxosInstance.currentPosition += 1;
 			paxosInstance.maxPosition = Math.max(paxosInstance.currentPosition, paxosInstance.maxPosition);
 <<<<<<< HEAD
+<<<<<<< HEAD
 			System.out.println("***********write proposal********** \n" + decidedProposal+"\n\n");
+=======
+			//System.out.println("***********write proposal********** " + decidedProposal);
+>>>>>>> parent of 2135ebe... Revert "clean output"
 =======
 			//System.out.println("***********write proposal********** " + decidedProposal);
 >>>>>>> parent of 2135ebe... Revert "clean output"
@@ -110,7 +118,11 @@ public class Learner {
 				server.GlobalLog.add(decidedProposal);
 				paxosInstance.currentPosition += 1;
 <<<<<<< HEAD
+<<<<<<< HEAD
 				System.out.println("***********write proposal********** \n" + decidedProposal+"\n\n");
+=======
+				//System.out.println("***********write proposal********** " + decidedProposal);
+>>>>>>> parent of 2135ebe... Revert "clean output"
 =======
 				//System.out.println("***********write proposal********** " + decidedProposal);
 >>>>>>> parent of 2135ebe... Revert "clean output"
