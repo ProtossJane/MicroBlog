@@ -292,6 +292,10 @@ public class FrontServer extends Server{
 			}
 			//System.out.println( blogs );
 		}
+		else if(command.matches("serverId"))
+		{
+			System.out.println(serverId);
+		}
 		
 		else if (command.matches("exit"))	{
 			
