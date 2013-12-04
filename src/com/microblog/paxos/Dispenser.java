@@ -196,7 +196,7 @@ public class Dispenser implements Runnable{
 	}
 	
 	public Paxos getPaxosInstance (int paxosId)	{
-		if (server.isOptimized)
+		if (FrontServer.isOptimized)
 			return multiPaxos.get(paxosId);
 		else
 			return paxosInstance;
