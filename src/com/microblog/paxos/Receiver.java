@@ -34,7 +34,7 @@ public class Receiver extends Server{
 					}
 					
 					if ( !(msg.matches("recover_respond:.*") || msg.matches( "decide:.*") || msg.matches("recover:.*")) )
-					System.out.println( "get msg from paxos:" + msg );
+					//System.out.println( "get msg from paxos:" + msg );
 					server.addJob(msg);
 					
 				}
