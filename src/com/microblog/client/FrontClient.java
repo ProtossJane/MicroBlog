@@ -43,10 +43,10 @@ public class FrontClient extends Client {
 		setRoutingTable( route );
 		try {
 			
-			FrontClient client = new FrontClient ( route.get(Integer.parseInt(args[0])),8000);
+			FrontClient client = new FrontClient ( route.get(Integer.parseInt(args[0])),8000 + Integer.parseInt(args[2]));
 			//CLI();
 			client.send(args[1]);
-			System.out.println(client.receive());
+			//System.out.println(client.receive());
 			//client.send("accepted:1:1:0:1:test");
 			//System.out.println ( "response: "+ client.receive());
 			
