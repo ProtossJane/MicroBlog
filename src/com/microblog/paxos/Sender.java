@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import com.microblog.client.Client;
+import com.microblog.server.FrontServer;
 
 public class Sender {
 	protected HashMap<Integer, String> route;
@@ -38,7 +39,7 @@ public class Sender {
 		clientList.get(dest).send(message);*/
 		
 		try {
-			new paxosClient(route.get(dest), 9000 ).send(message);
+			new paxosClient(route.get(dest), FrontServer.port+1000  ).send(message);
 		} catch (IOException e) {
 
 			
