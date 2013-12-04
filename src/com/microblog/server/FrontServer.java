@@ -179,6 +179,7 @@ public class FrontServer extends Server{
 			PrintWriter outputstream = new PrintWriter (client.getOutputStream(), true);
 			String msg = inputstream.readLine();
 			System.out.println( "get msg from client:" + msg );
+			if (msg == null) return;
 			if (msg.matches("\\s*fail\\s*"))	{
 				fail();
 			}
@@ -291,9 +292,9 @@ public class FrontServer extends Server{
 			server.unfail();
 		}
 		
-		else if ( command.matches("\\s*post\\s*(.*)") || command.matches("\\s*post\\s*"))	{
+		else if ( command.matches("\\s*post\\s*(.*)") || command.matches("\\s*post\\s*.*"))	{
 			if (command.matches("\\s*post\\s*(.*)")	)	{
-				command = command.replaceFirst("\\s*post\\s*(", "");
+				command = command.replaceFirst("\\s*post\\s*\\(", "");
 				command = command.substring(0, command.lastIndexOf(")"));
 			}
 			else	{
