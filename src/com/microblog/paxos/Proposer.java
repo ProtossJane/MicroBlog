@@ -43,7 +43,7 @@ public class Proposer {
 		//System.out.println("compare this bal: " + this.bal + " with receive bal: " + bal);
 		
 		if ( !bal.equals(this.bal) || promiseReceived.contains(senderId) )	{
-			System.out.println("throw promise " + bal);
+			//System.out.println("throw promise " + bal);
 			return;
 		}
 		
