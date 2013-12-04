@@ -83,7 +83,12 @@ public class FrontServer extends Server{
 	public void setRoutingTable()	{
 		
 		try {
-			BufferedReader reader = new BufferedReader( new FileReader(System.getProperty("user.dir") + "/route") ) ;
+			int temp = 0;
+			if(isOptimized)
+			{
+				temp = 1;
+			}
+			BufferedReader reader = new BufferedReader( new FileReader(System.getProperty("user.dir") + "/route"+temp) ) ;
 			String s;
 			try {
 				while ( (s = reader.readLine()) !=null)	{
